@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "244083738284",
+    "project_id": "flowva-b8d24",
+    "storage_bucket": "flowva-b8d24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244083738284:android:305eebfdfdcb5fe8370109",
+        "android_client_info": {
+          "package_name": "com.example.flowva"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxxYdvJg47Cc8IuRvfl7Q7DRHrABk4-CE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244083738284:android:376e2cdcfd08a52c370109",
+        "android_client_info": {
+          "package_name": "com.flowva.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxxYdvJg47Cc8IuRvfl7Q7DRHrABk4-CE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
