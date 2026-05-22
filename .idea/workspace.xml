@@ -6,14 +6,24 @@
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/~$owva_SDLC_Document.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/flowva.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flowva.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_colors.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_colors.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_sizes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_sizes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/theme/dark_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/dark_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/theme/light_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/light_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/controllers/auth_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/controllers/auth_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/forgot_password_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/forgot_password_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/signup_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/signup_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/splash_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/splash_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/widgets/auth_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/widgets/auth_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/widgets/auth_text_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/widgets/auth_text_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/widget_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
@@ -28,7 +38,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="1d7074e0-0a94-42dd-b7bd-10280133224d" />
+        <option name="activeSessionId" value="04a32e05-3448-487d-a0da-963742e70eeb" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -36,6 +46,14 @@
             <option name="modeId" value="Ask" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="04a32e05-3448-487d-a0da-963742e70eeb" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="claude-haiku-4.5" />
             <option name="targetType" value="LOCAL" />
           </session>
         </option>
@@ -70,6 +88,31 @@
     &quot;assignee&quot;: &quot;fahad2bhatti&quot;
   }
 }</component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1779483170" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="fahad/dev" />
+                    <option name="lastUsedInstant" value="1779483169" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/fahad2bhatti/flowva.git&quot;,
@@ -93,24 +136,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;io.flutter.project.isFirstOpen&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/flowva&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "io.flutter.project.isFirstOpen": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/flowva",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="" />
