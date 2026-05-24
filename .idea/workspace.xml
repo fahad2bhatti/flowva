@@ -6,26 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_colors.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_colors.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_sizes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_sizes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/theme/dark_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/dark_theme.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/theme/light_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/light_theme.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/controllers/auth_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/controllers/auth_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/forgot_password_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/forgot_password_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/signup_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/signup_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/splash_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/splash_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/widgets/auth_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/widgets/auth_button.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/widgets/auth_text_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/widgets/auth_text_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flowva.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flowva.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/group_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/group_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/controllers/group_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/controllers/group_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/create_group_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/create_group_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/widget_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/join_group_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/join_group_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/widgets/group_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/widgets/group_card.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +25,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="04a32e05-3448-487d-a0da-963742e70eeb" />
+        <option name="activeSessionId" value="3d96da3a-8c37-46c4-99cc-97f559351558" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -56,6 +43,14 @@
             <option name="modelValue" value="claude-haiku-4.5" />
             <option name="targetType" value="LOCAL" />
           </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="3d96da3a-8c37-46c4-99cc-97f559351558" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="claude-haiku-4.5" />
+            <option name="targetType" value="LOCAL" />
+          </session>
         </option>
         <option name="type" value="PANEL" />
       </chat>
@@ -65,6 +60,9 @@
     <persistenceIdMap>
       <entry key="_C:/flowva" value="3E4yzwPPa2RHbRXsJZTdXh7k21m" />
     </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="1035" />
   </component>
   <component name="FileEditorManager">
     <leaf>
@@ -119,6 +117,10 @@
     &quot;accountId&quot;: &quot;d8ada291-0c68-418b-b0c2-777ef4e5a52b&quot;
   }
 }</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2,
   &quot;fromUser&quot;: false
@@ -139,6 +141,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
@@ -147,7 +150,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "fahad/dev",
     "io.flutter.project.isFirstOpen": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/flowva",
