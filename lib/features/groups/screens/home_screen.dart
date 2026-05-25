@@ -8,6 +8,8 @@ import '../../../data/models/group_model.dart';
 import '../widgets/group_card.dart';
 import 'create_group_screen.dart';
 import 'join_group_screen.dart';
+import '../../feed/screens/group_feed_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -43,6 +45,107 @@ class _HomeScreenState extends State<HomeScreen>
     _searchController.dispose();
     _fabController.dispose();
     super.dispose();
+  }
+
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildGroupsList();
+      case 1:
+        return _buildComingSoon('Feed', Icons.dynamic_feed_rounded);
+      case 2:
+        return _buildComingSoon('Tasks', Icons.check_circle_outline_rounded);
+      case 3:
+        return _buildComingSoon('AI Assistant', Icons.auto_awesome_rounded);
+      case 4:
+        return _buildComingSoon('Profile', Icons.person_outline_rounded);
+      default:
+        return _buildGroupsList();
+    }
+  }
+
+  Widget _buildComingSoon(String title, IconData icon) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppColors.accentTeal.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: AppColors.accentTeal, size: 36),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              color: AppColors.text,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Coming Soon',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupsList() {
+    return StreamBuilder<List<GroupModel>>(
+      stream: GroupController.instance.getUserGroups(),
+      builder: (ctx, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const _LoadingState();
+        }
+        if (snapshot.hasError) {
+          return _ErrorState(
+            message: snapshot.error.toString().replaceAll('Exception: ', ''),
+          );
+        }
+        final groups = snapshot.data ?? [];
+        final filtered = _searchQuery.isEmpty
+            ? groups
+            : groups
+            .where((g) =>
+        g.name.toLowerCase().contains(_searchQuery) ||
+            g.description.toLowerCase().contains(_searchQuery))
+            .toList();
+
+        if (filtered.isEmpty) {
+          return _EmptyState(
+            isSearching: _searchQuery.isNotEmpty,
+            onCreateTap: () => Navigator.push(
+                context, _slideRoute(const CreateGroupScreen())),
+            onJoinTap: () => Navigator.push(
+                context, _slideRoute(const JoinGroupScreen())),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+          itemCount: filtered.length,
+          itemBuilder: (ctx, i) => GroupCard(
+            group: filtered[i],
+            onTap: () {
+              Navigator.push(
+                context,
+                _slideRoute(GroupFeedScreen(group: filtered[i])),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 
   // ─── Greeting helper ─────────────────────────────────────────────────────────
@@ -281,69 +384,11 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 14),
 
               // ── Group list ──────────────────────────────────────────────────
+              const SizedBox(height: 14),
+
+              // ── Body ────────────────────────────────────────────────────────
               Expanded(
-                child: StreamBuilder<List<GroupModel>>(
-                  stream: GroupController.instance.getUserGroups(),
-                  builder: (ctx, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const _LoadingState();
-                    }
-
-                    if (snapshot.hasError) {
-                      return _ErrorState(
-                        message: snapshot.error
-                            .toString()
-                            .replaceAll('Exception: ', ''),
-                      );
-                    }
-
-                    final groups = snapshot.data ?? [];
-                    final filtered = _searchQuery.isEmpty
-                        ? groups
-                        : groups
-                            .where((g) =>
-                                g.name.toLowerCase().contains(_searchQuery) ||
-                                g.description
-                                    .toLowerCase()
-                                    .contains(_searchQuery))
-                            .toList();
-
-                    if (filtered.isEmpty) {
-                      return _EmptyState(
-                        isSearching: _searchQuery.isNotEmpty,
-                        onCreateTap: () => Navigator.push(
-                            context, _slideRoute(const CreateGroupScreen())),
-                        onJoinTap: () => Navigator.push(
-                            context, _slideRoute(const JoinGroupScreen())),
-                      );
-                    }
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
-                      itemCount: filtered.length,
-                      itemBuilder: (ctx, i) => GroupCard(
-                        group: filtered[i],
-                        onTap: () {
-                          // TODO: Navigate to group feed in Sprint 3
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Opening "${filtered[i].name}"…',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              backgroundColor: AppColors.accentTeal,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              margin: const EdgeInsets.all(16),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
+                child: _buildBody(),
               ),
             ],
           ),

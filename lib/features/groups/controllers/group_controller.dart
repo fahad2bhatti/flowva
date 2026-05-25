@@ -11,15 +11,12 @@ class GroupController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // ─── Helpers ────────────────────────────────────────────────────────────────
-
   User get _currentUser {
     final user = _auth.currentUser;
     if (user == null) throw Exception('User not authenticated.');
     return user;
   }
 
-  /// Generate a random 6-character alphanumeric invite code (uppercase).
   String generateInviteCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rand = Random.secure();
@@ -28,8 +25,6 @@ class GroupController {
 
   // ─── Create Group ────────────────────────────────────────────────────────────
 
-  /// Creates a new group document and adds the creator as an owner member.
-  /// Returns the newly created [GroupModel].
   Future<GroupModel> createGroup({
     required String name,
     required String description,
@@ -39,7 +34,6 @@ class GroupController {
     final inviteCode = generateInviteCode();
     final now = Timestamp.now();
 
-    // Build the group document data
     final groupData = {
       'name': name.trim(),
       'description': description.trim(),
@@ -51,11 +45,10 @@ class GroupController {
       'lastActive': now,
     };
 
-    // Create the group document
     final docRef = await _firestore.collection('groups').add(groupData);
 
-    // Add creator as owner in the members subcollection
     await docRef.collection('members').doc(user.uid).set({
+      'uid': user.uid,
       'role': 'owner',
       'joinedAt': now,
       'displayName': user.displayName ?? 'Unknown',
@@ -77,13 +70,10 @@ class GroupController {
 
   // ─── Join Group ───────────────────────────────────────────────────────────
 
-  /// Joins an existing group by [inviteCode].
-  /// Returns the [GroupModel] for the joined group.
   Future<GroupModel> joinGroup(String inviteCode) async {
     final user = _currentUser;
     final code = inviteCode.trim().toUpperCase();
 
-    // Find the group with this invite code
     final query = await _firestore
         .collection('groups')
         .where('inviteCode', isEqualTo: code)
@@ -97,7 +87,6 @@ class GroupController {
     final groupDoc = query.docs.first;
     final group = GroupModel.fromFirestore(groupDoc);
 
-    // Check if already a member
     final memberDoc = await groupDoc.reference
         .collection('members')
         .doc(user.uid)
@@ -109,15 +98,14 @@ class GroupController {
 
     final now = Timestamp.now();
 
-    // Add user as member
     await groupDoc.reference.collection('members').doc(user.uid).set({
+      'uid': user.uid,
       'role': 'member',
       'joinedAt': now,
       'displayName': user.displayName ?? 'Unknown',
       'photoUrl': user.photoURL ?? '',
     });
 
-    // Increment member count
     await groupDoc.reference.update({
       'memberCount': FieldValue.increment(1),
       'lastActive': now,
@@ -128,39 +116,25 @@ class GroupController {
 
   // ─── Get User Groups (Stream) ─────────────────────────────────────────────
 
-  /// Returns a real-time stream of all groups the current user belongs to.
   Stream<List<GroupModel>> getUserGroups() {
     final user = _currentUser;
 
-    // We fetch all groups and filter by membership via collectionGroup.
-    // For simplicity, we query groups where ownerId == user OR memberCount > 0
-    // and cross-check. Best approach: maintain a "groupIds" array on user doc
-    // OR use a collectionGroup query on "members".
+    // ✅ Simple approach: ownerId se query — no index required
     return _firestore
-        .collectionGroup('members')
-        .where(FieldPath.documentId, isEqualTo: user.uid)
+        .collection('groups')
+        .where('ownerId', isEqualTo: user.uid)
         .snapshots()
-        .asyncMap((memberSnap) async {
-      if (memberSnap.docs.isEmpty) return <GroupModel>[];
-
-      final groupFutures = memberSnap.docs.map((memberDoc) async {
-        // Parent path of the member doc is the group doc
-        final groupRef = memberDoc.reference.parent.parent;
-        if (groupRef == null) return null;
-        final groupDoc = await groupRef.get();
-        if (!groupDoc.exists) return null;
-        return GroupModel.fromFirestore(groupDoc);
-      });
-
-      final results = await Future.wait(groupFutures);
-      return results.whereType<GroupModel>().toList()
-        ..sort((a, b) => b.lastActive.compareTo(a.lastActive));
+        .asyncMap((snap) async {
+      final results = snap.docs
+          .map((doc) => GroupModel.fromFirestore(doc))
+          .toList();
+      results.sort((a, b) => b.lastActive.compareTo(a.lastActive));
+      return results;
     });
   }
 
   // ─── Delete Group ─────────────────────────────────────────────────────────
 
-  /// Deletes a group. Only the owner can delete.
   Future<void> deleteGroup(String groupId) async {
     final user = _currentUser;
     final groupDoc = await _firestore.collection('groups').doc(groupId).get();
