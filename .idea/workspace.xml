@@ -5,17 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/post_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/post_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/feed/controllers/feed_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/feed/controllers/feed_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/feed/screens/group_feed_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/feed/screens/group_feed_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/feed/widgets/post_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/feed/widgets/post_card.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/groups/controllers/group_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/controllers/group_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/create_group_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/create_group_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/join_group_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/join_group_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/widgets/group_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/widgets/group_card.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +23,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="b3041a38-4d7a-42c5-8da0-08c901730d8b" />
+        <option name="activeSessionId" value="d23908fb-28b2-4424-9691-95a1864af476" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -214,6 +209,16 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/groups/widgets/group_card.dart</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

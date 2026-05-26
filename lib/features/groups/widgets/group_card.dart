@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../data/models/group_model.dart';
+import 'package:flutter/services.dart';
 
 class GroupCard extends StatefulWidget {
   final GroupModel group;
@@ -42,6 +43,127 @@ class _GroupCardState extends State<GroupCard>
   void dispose() {
     _scaleController.dispose();
     super.dispose();
+  }
+  void _showInviteCode(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
+        decoration: const BoxDecoration(
+          color: Color(0xFF141A3A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          border: Border(
+            top: BorderSide(color: Color(0x1A00D4AA)),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: AppColors.textMuted.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const Text(
+              'Invite Code',
+              style: TextStyle(
+                color: AppColors.text,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Share this code to invite members to "${widget.group.name}"',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 28),
+            // Code box
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+              decoration: BoxDecoration(
+                color: AppColors.elevatedSurface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: AppColors.accentTeal.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Text(
+                widget.group.inviteCode,
+                style: const TextStyle(
+                  color: AppColors.accentTeal,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Copy button
+            GestureDetector(
+              onTap: () {
+                Clipboard.setData(
+                  ClipboardData(text: widget.group.inviteCode),
+                );
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Invite code copied!'),
+                    backgroundColor: AppColors.success,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: const EdgeInsets.all(16),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: AppColors.brandGradient,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.accentTeal.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.copy_rounded, color: Colors.white, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      'Copy Code',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   // ─── Colour helpers ─────────────────────────────────────────────────────────
@@ -84,6 +206,7 @@ class _GroupCardState extends State<GroupCard>
         widget.onTap();
       },
       onTapCancel: () => _scaleController.reverse(),
+      onLongPress: () => _showInviteCode(context), // ← yeh add karo
       child: AnimatedBuilder(
         animation: _scaleAnimation,
         builder: (context, child) => Transform.scale(

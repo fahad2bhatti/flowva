@@ -55,6 +55,12 @@ class GroupController {
       'photoUrl': user.photoURL ?? '',
     });
 
+    // ← yahan
+    await _firestore.collection('users').doc(user.uid).set({
+      'groupIds': FieldValue.arrayUnion([docRef.id]),
+    }, SetOptions(merge: true));
+
+
     return GroupModel(
       id: docRef.id,
       name: name.trim(),
@@ -110,6 +116,9 @@ class GroupController {
       'memberCount': FieldValue.increment(1),
       'lastActive': now,
     });
+    await _firestore.collection('users').doc(user.uid).set({
+      'groupIds': FieldValue.arrayUnion([groupDoc.id]),
+    }, SetOptions(merge: true));
 
     return group;
   }
@@ -119,17 +128,41 @@ class GroupController {
   Stream<List<GroupModel>> getUserGroups() {
     final user = _currentUser;
 
-    // ✅ Simple approach: ownerId se query — no index required
     return _firestore
-        .collection('groups')
-        .where('ownerId', isEqualTo: user.uid)
+        .collection('users')
+        .doc(user.uid)
         .snapshots()
-        .asyncMap((snap) async {
-      final results = snap.docs
-          .map((doc) => GroupModel.fromFirestore(doc))
-          .toList();
-      results.sort((a, b) => b.lastActive.compareTo(a.lastActive));
-      return results;
+        .asyncMap((userDoc) async {
+      // Owner groups
+      final ownerSnap = await _firestore
+          .collection('groups')
+          .where('ownerId', isEqualTo: user.uid)
+          .get();
+
+      // Joined groups
+      final groupIds = List<String>.from(
+        userDoc.data()?['groupIds'] ?? [],
+      );
+
+      final joinedFutures = groupIds.map((id) async {
+        final doc = await _firestore.collection('groups').doc(id).get();
+        if (!doc.exists) return null;
+        return GroupModel.fromFirestore(doc);
+      });
+
+      final joinedResults = await Future.wait(joinedFutures);
+
+      // Combine aur duplicates hata do
+      final allGroups = <String, GroupModel>{};
+      for (final g in ownerSnap.docs) {
+        allGroups[g.id] = GroupModel.fromFirestore(g);
+      }
+      for (final g in joinedResults.whereType<GroupModel>()) {
+        allGroups[g.id] = g;
+      }
+
+      return allGroups.values.toList()
+        ..sort((a, b) => b.lastActive.compareTo(a.lastActive));
     });
   }
 

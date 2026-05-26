@@ -3,7 +3,7 @@ import 'package:flowva/core/constants/app_colors.dart';
 import 'package:flowva/data/models/group_model.dart';
 import 'package:flowva/features/feed/controllers/feed_controller.dart';
 import 'package:flowva/features/feed/widgets/post_card.dart';
-import 'package:flowva/features/auth/controllers/auth_controller.dart';
+//
 
 class GroupFeedScreen extends StatefulWidget {
   final GroupModel group;
@@ -32,6 +32,62 @@ class _GroupFeedScreenState extends State<GroupFeedScreen> {
     } catch (_) {
       return AppColors.accentTeal;
     }
+  }
+  List<Widget> _buildStoryAvatars() {
+    final colors = [
+      AppColors.accentTeal,
+      AppColors.accentElectricBlue,
+      AppColors.aiAccent,
+      AppColors.success,
+      AppColors.warning,
+    ];
+    final names = ['You', 'M1', 'M2', 'M3', 'M4'];
+
+    return List.generate(5, (i) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: Column(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    colors[i % colors.length],
+                    colors[i % colors.length].withValues(alpha: 0.6),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                border: Border.all(
+                  color: colors[i % colors.length].withValues(alpha: 0.5),
+                  width: 2.5,
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                names[i][0],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              names[i],
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   // ── Create post ──────────────────────────────────────────────────────────────
@@ -321,7 +377,53 @@ class _GroupFeedScreenState extends State<GroupFeedScreen> {
 
             const SizedBox(height: 12),
 
-            // ── Posts Feed ───────────────────────────────────────────────────
+            // ── Stories Row ──────────────────────────────────────────
+            SizedBox(
+              height: 90,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.accentTeal,
+                              width: 2,
+                            ),
+                            color: AppColors.elevatedSurface,
+                          ),
+                          child: const Icon(
+                            Icons.add_rounded,
+                            color: AppColors.accentTeal,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Add Story',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ..._buildStoryAvatars(),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // ── Posts Feed ───────────────────────────────────────────
             Expanded(
               child: StreamBuilder(
                 stream: FeedController.instance.getPosts(widget.group.id),
