@@ -45,15 +45,22 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Future<void> _loadMembers() async {
     try {
       final members = await GroupController.instance.getGroupMembers(widget.groupId);
-      setState(() {
-        _members = members;
-        _loadingMembers = false;
-      });
+      if (mounted) {
+        setState(() {
+          _members = members;
+          _loadingMembers = false;
+          if (members.isEmpty) {
+            _error = 'No members found in this group. Please add members first.';
+          }
+        });
+      }
     } catch (e) {
-      setState(() {
-        _loadingMembers = false;
-        _error = e.toString().replaceAll('Exception: ', '');
-      });
+      if (mounted) {
+        setState(() {
+          _loadingMembers = false;
+          _error = e.toString().replaceAll('Exception: ', '');
+        });
+      }
     }
   }
 
@@ -127,6 +134,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text(
           'Create Task',
@@ -226,7 +234,15 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border),
               ),
-              child: DropdownButtonHideUnderline(
+              child: _members.isEmpty
+                  ? const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'No members available. Add members to assign tasks.',
+                  style: TextStyle(color: AppColors.textMuted),
+                ),
+              )
+                  : DropdownButtonHideUnderline(
                 child: DropdownButton<UserModel>(
                   isExpanded: true,
                   value: _selectedAssignee,
@@ -257,7 +273,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                               ),
                               child: Center(
                                 child: Text(
-                                  member.name[0].toUpperCase(),
+                                  member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
                                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                 ),
                               ),

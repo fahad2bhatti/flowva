@@ -11,12 +11,10 @@ ThemeData buildDarkTheme() {
       primary: AppColors.accent,
       secondary: AppColors.accent,
       surface: AppColors.surface,
-      background: AppColors.background,
       error: AppColors.error,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
       onSurface: AppColors.textPrimary,
-      onBackground: AppColors.textPrimary,
       onError: Colors.white,
     ),
 

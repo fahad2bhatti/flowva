@@ -5,37 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/core/theme/theme_provider.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/tasks/widgets/status_badge.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/shared/widgets/skeleton_widgets.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_colors.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_colors.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/core/theme/dark_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/dark_theme.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/theme/light_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/light_theme.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/user_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/forgot_password_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/forgot_password_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/signup_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/signup_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/screens/splash_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/screens/splash_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/widgets/auth_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/widgets/auth_button.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/widgets/auth_text_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/widgets/auth_text_field.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/feed/screens/group_feed_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/feed/screens/group_feed_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/feed/widgets/post_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/feed/widgets/post_card.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/groups/controllers/group_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/controllers/group_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/create_group_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/create_group_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/join_group_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/join_group_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/groups/widgets/group_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/widgets/group_card.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/tasks/controllers/task_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/tasks/controllers/task_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/tasks/screens/create_task_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/tasks/screens/create_task_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/tasks/screens/task_detail_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/tasks/screens/task_detail_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/tasks/widgets/priority_badge.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/tasks/widgets/priority_badge.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,6 +234,17 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

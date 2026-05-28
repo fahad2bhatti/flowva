@@ -242,6 +242,7 @@ class _HomeScreenState extends State<HomeScreen>
         : 'F';
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
