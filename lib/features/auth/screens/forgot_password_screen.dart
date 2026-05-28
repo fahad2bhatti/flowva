@@ -35,20 +35,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       );
 
       if (mounted) {
-        // Success dialog
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
+            backgroundColor: AppColors.card,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: AppColors.border, width: 0.5),
             ),
             title: const Text(
               'Reset Email Sent',
               style: TextStyle(
-                color: AppColors.text,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
               ),
             ),
             content: Text(
@@ -56,13 +57,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 14,
+                fontFamily: 'Inter',
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Dismiss Dialog
-                  Navigator.of(context).pop(); // Return to Login
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.accent,
@@ -106,110 +108,101 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.text,
+            color: AppColors.textSecondary,
             size: 20,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.backgroundGradient,
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Recovery Icon
-                    Center(
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: AppColors.shadow,
-                              blurRadius: 10,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.lock_reset_rounded,
-                          color: AppColors.accent,
-                          size: 40,
-                        ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Recovery Icon
+                  Center(
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.border, width: 0.5),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.lock_reset_rounded,
+                        color: AppColors.accent,
+                        size: 40,
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    const Center(
-                      child: Text(
-                        'Reset Password',
-                        style: TextStyle(
-                          color: AppColors.text,
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                        ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Center(
+                    child: Text(
+                      'Reset Password',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                        fontFamily: 'Inter',
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Enter your register email address below and we will send you a secure link to reset your account password.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 14,
-                          height: 1.4,
-                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Enter your registered email address below and we will send you a secure link to reset your account password.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14,
+                        height: 1.4,
+                        fontFamily: 'Inter',
                       ),
                     ),
-                    const SizedBox(height: 36),
+                  ),
+                  const SizedBox(height: 36),
 
-                    // Email Field
-                    AuthTextField(
-                      controller: _emailController,
-                      hintText: 'Email Address',
-                      prefixIcon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your email.';
-                        }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
-                          return 'Please enter a valid email address.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
+                  // Email Field
+                  AuthTextField(
+                    controller: _emailController,
+                    hintText: 'Email Address',
+                    prefixIcon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your email.';
+                      }
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
+                        return 'Please enter a valid email address.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Reset button
-                    AuthButton(
-                      text: 'Send Reset Email',
-                      onPressed: _handleResetPassword,
-                      isLoading: _isLoading,
-                    ),
-                  ],
-                ),
+                  // Reset button
+                  AuthButton(
+                    text: 'Send Reset Email',
+                    onPressed: _handleResetPassword,
+                    isLoading: _isLoading,
+                  ),
+                ],
               ),
             ),
           ),

@@ -87,7 +87,6 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  // ─── Login Handler ───────────────────────────
   Future<void> _handleLogin() async {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
@@ -121,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: AppColors.primaryBackground,
+        backgroundColor: AppColors.background,
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
@@ -149,7 +148,6 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── Hero Section ────────────────────────────
   Widget _buildHeroSection(Size size) {
     return Container(
       width: double.infinity,
@@ -159,9 +157,9 @@ class _LoginScreenState extends State<LoginScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF0A0F2C),
-            Color(0xFF0D1535),
-            Color(0xFF0A1628),
+            Color(0xFF0A0A0F),
+            Color(0xFF0F1117),
+            Color(0xFF0A0A0F),
           ],
         ),
       ),
@@ -179,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.accentTeal.withValues(alpha: 0.18),
+                    color: AppColors.accent.withValues(alpha: 0.15),
                     width: 1.5,
                   ),
                 ),
@@ -197,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.accentTeal.withValues(alpha: 0.10),
+                    color: AppColors.accent.withValues(alpha: 0.08),
                     width: 1,
                   ),
                 ),
@@ -214,16 +212,18 @@ class _LoginScreenState extends State<LoginScreen>
                 height: 148,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: AppColors.brandGradient,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF4B5563),
+                      Color(0xFF374151),
+                    ],
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.accentTeal.withValues(alpha: 0.35),
-                      blurRadius: 40,
-                      spreadRadius: 8,
-                    ),
-                    BoxShadow(
-                      color: AppColors.accentElectricBlue.withValues(alpha: 0.20),
-                      blurRadius: 60,
+                      color: AppColors.accent.withValues(alpha: 0.25),
+                      blurRadius: 30,
                       spreadRadius: 4,
                     ),
                   ],
@@ -237,13 +237,12 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── Form Card ───────────────────────────────
   Widget _buildFormCard() {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: AppColors.secondaryBackground,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
       child: Form(
@@ -256,8 +255,9 @@ class _LoginScreenState extends State<LoginScreen>
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text,
+                color: AppColors.textPrimary,
                 letterSpacing: -0.5,
+                fontFamily: 'Inter',
               ),
             ),
             const SizedBox(height: 6),
@@ -266,6 +266,7 @@ class _LoginScreenState extends State<LoginScreen>
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
+                fontFamily: 'Inter',
               ),
             ),
             const SizedBox(height: 32),
@@ -321,7 +322,7 @@ class _LoginScreenState extends State<LoginScreen>
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.accentTeal,
+                    color: AppColors.accent,
                   ),
                 ),
               ),
@@ -347,6 +348,7 @@ class _LoginScreenState extends State<LoginScreen>
         fontWeight: FontWeight.w500,
         color: AppColors.textSecondary,
         letterSpacing: 0.2,
+        fontFamily: 'Inter',
       ),
     );
   }
@@ -357,7 +359,7 @@ class _LoginScreenState extends State<LoginScreen>
       child: TextFormField(
         controller: _emailController,
         keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(fontSize: 15, color: AppColors.text),
+        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
         decoration: _inputDecoration(
           hint: 'you@example.com',
           icon: Icons.mail_outline_rounded,
@@ -379,7 +381,7 @@ class _LoginScreenState extends State<LoginScreen>
       child: TextFormField(
         controller: _passwordController,
         obscureText: _obscurePassword,
-        style: const TextStyle(fontSize: 15, color: AppColors.text),
+        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
         decoration: _inputDecoration(
           hint: '••••••••',
           icon: Icons.lock_outline_rounded,
@@ -415,26 +417,24 @@ class _LoginScreenState extends State<LoginScreen>
       hintText: hint,
       hintStyle: const TextStyle(
         fontSize: 15,
-        color: Color(0xFF4A5568),
+        color: AppColors.textMuted,
       ),
       prefixIcon: Icon(
         icon,
         size: 18,
-        color: focused ? AppColors.accentTeal : const Color(0xFF4A5568),
+        color: focused ? AppColors.accent : AppColors.textMuted,
       ),
       suffixIcon: suffix,
       filled: true,
-      fillColor: const Color(0xFF141A3A),
-      contentPadding:
-      const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      fillColor: AppColors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Color(0xFF1E2A4A), width: 1),
+        borderSide: const BorderSide(color: AppColors.border, width: 0.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide:
-        const BorderSide(color: AppColors.accentTeal, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.accent, width: 1),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -457,18 +457,14 @@ class _LoginScreenState extends State<LoginScreen>
         height: 54,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          gradient: _isLoading
-              ? const LinearGradient(
-            colors: [Color(0xFF00A884), Color(0xFF3A72CC)],
-          )
-              : AppColors.brandGradient,
+          color: AppColors.accent,
           boxShadow: _isLoading
               ? []
               : [
             BoxShadow(
-              color: AppColors.accentTeal.withValues(alpha: 0.30),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
+              color: AppColors.accent.withValues(alpha: 0.25),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -479,8 +475,7 @@ class _LoginScreenState extends State<LoginScreen>
             height: 22,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
-              valueColor:
-              AlwaysStoppedAnimation<Color>(Colors.white),
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
           )
               : const Text(
@@ -490,6 +485,7 @@ class _LoginScreenState extends State<LoginScreen>
               fontWeight: FontWeight.w700,
               color: Colors.white,
               letterSpacing: 0.3,
+              fontFamily: 'Inter',
             ),
           ),
         ),
@@ -500,15 +496,15 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildDivider() {
     return Row(
       children: [
-        Expanded(child: Container(height: 1, color: const Color(0xFF1E2A4A))),
+        Expanded(child: Container(height: 1, color: AppColors.border)),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'or',
-            style: TextStyle(fontSize: 13, color: Color(0xFF4A5568)),
+            style: TextStyle(fontSize: 13, color: AppColors.textMuted),
           ),
         ),
-        Expanded(child: Container(height: 1, color: const Color(0xFF1E2A4A))),
+        Expanded(child: Container(height: 1, color: AppColors.border)),
       ],
     );
   }
@@ -528,7 +524,7 @@ class _LoginScreenState extends State<LoginScreen>
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: AppColors.accentTeal,
+              color: AppColors.accent,
             ),
           ),
         ),
@@ -537,7 +533,6 @@ class _LoginScreenState extends State<LoginScreen>
   }
 }
 
-// ─── Logo Content ────────────────────────────
 class _FlowvaLogoContent extends StatelessWidget {
   const _FlowvaLogoContent();
 
@@ -558,6 +553,7 @@ class _FlowvaLogoContent extends StatelessWidget {
             fontWeight: FontWeight.w700,
             color: Colors.white,
             letterSpacing: 1.2,
+            fontFamily: 'Inter',
           ),
         ),
       ],
@@ -565,7 +561,6 @@ class _FlowvaLogoContent extends StatelessWidget {
   }
 }
 
-// ─── Flow Icon Painter ───────────────────────
 class _FlowIconPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

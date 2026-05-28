@@ -28,7 +28,7 @@ class _AuthButtonState extends State<AuthButton> with SingleTickerProviderStateM
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.97).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
@@ -50,13 +50,15 @@ class _AuthButtonState extends State<AuthButton> with SingleTickerProviderStateM
         scale: _scaleAnimation,
         child: Container(
           width: double.infinity,
-          height: 56,
+          height: 52,
           decoration: BoxDecoration(
-            gradient: AppColors.tealGradient,
+            color: widget.isLoading ? AppColors.accent.withValues(alpha: 0.7) : AppColors.accent,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
+            boxShadow: widget.isLoading
+                ? []
+                : [
               BoxShadow(
-                color: AppColors.accent.withValues(alpha: 0.3),
+                color: AppColors.accent.withValues(alpha: 0.25),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -65,22 +67,23 @@ class _AuthButtonState extends State<AuthButton> with SingleTickerProviderStateM
           alignment: Alignment.center,
           child: widget.isLoading
               ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.0,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          )
               : Text(
-                  widget.text,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+            widget.text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
+              fontFamily: 'Inter',
+            ),
+          ),
         ),
       ),
     );

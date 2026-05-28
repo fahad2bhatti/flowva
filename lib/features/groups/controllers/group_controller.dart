@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../data/models/group_model.dart';
+import '../../../../data/models/user_model.dart';
 
 class GroupController {
   // Singleton
@@ -55,11 +56,9 @@ class GroupController {
       'photoUrl': user.photoURL ?? '',
     });
 
-    // ← yahan
     await _firestore.collection('users').doc(user.uid).set({
       'groupIds': FieldValue.arrayUnion([docRef.id]),
     }, SetOptions(merge: true));
-
 
     return GroupModel(
       id: docRef.id,
@@ -164,6 +163,37 @@ class GroupController {
       return allGroups.values.toList()
         ..sort((a, b) => b.lastActive.compareTo(a.lastActive));
     });
+  }
+
+  // ─── Get Group Members ────────────────────────────────────────────────────
+  // 🆕 NAYA METHOD ADDED
+
+  Future<List<UserModel>> getGroupMembers(String groupId) async {
+    final membersSnapshot = await _firestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('members')
+        .get();
+
+    List<UserModel> members = [];
+
+    for (var doc in membersSnapshot.docs) {
+      final userId = doc.id;
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        final userData = userDoc.data()!;
+        members.add(UserModel(
+          id: userId,
+          name: userData['name'] ?? doc.data()['displayName'] ?? 'Unknown',
+          email: userData['email'] ?? '',
+          photoUrl: userData['photoUrl'] ?? doc.data()['photoUrl'] ?? '',
+          role: doc.data()['role'] ?? 'member',
+          joinedAt: doc.data()['joinedAt'] ?? Timestamp.now(),
+        ));
+      }
+    }
+
+    return members;
   }
 
   // ─── Delete Group ─────────────────────────────────────────────────────────

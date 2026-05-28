@@ -4,60 +4,29 @@ class AppColors {
   AppColors._();
 
   // Background Colors
-  static const Color primaryBackground = Color(0xFF0A0F2C);
-  static const Color secondaryBackground = Color(0xFF111936);
-  static const Color elevatedSurface = Color(0xFF182347);
-  static const Color glassOverlay = Color(0x0AFFFFFF); // rgba(255,255,255,0.04)
+  static const Color background = Color(0xFF0A0A0F);     // Pure near-black
+  static const Color surface = Color(0xFF0F1117);        // Card background
+  static const Color card = Color(0xFF161B22);           // Card surface
+  static const Color border = Color(0xFF21262D);         // Subtle borders
 
-  // Brand / Accents
-  static const Color accentTeal = Color(0xFF00D4AA);
-  static const Color accentElectricBlue = Color(0xFF4A90FF);
-  static const Color aiAccent = Color(0xFF8B5CF6); // AI intelligence purple
+  // Single Accent Color (Graphite)
+  static const Color accent = Color(0xFF4B5563);          // Only accent color
 
-  // Backward compatibility aliases
-  static const Color accent = accentTeal;
-  static const Color cardBackground = elevatedSurface;
-  static const Color secondaryAccent = accentElectricBlue;
-  static const Color shadow = shadowColor;
-  static const LinearGradient tealGradient = brandGradient;
+  // Text Colors
+  static const Color textPrimary = Color(0xFFF0F6FC);     // White-ish
+  static const Color textSecondary = Color(0xFF8B949E);   // Grey
+  static const Color textMuted = Color(0xFF484F58);       // Muted grey
 
-  // Neutral / Typography
-  static const Color text = Color(0xFFF0F0F0);
-  static const Color textSecondary = Color(0xFF8E9AB6);
-  static const Color textMuted = Color(0xFF5D6B8C);
+  // Status Colors (Minimal)
+  static const Color error = Color(0xFFF85149);           // Red for errors only
+  static const Color success = Color(0xFF3FB950);         // Green for success only (minimal)
+  static const Color warning = Color(0xFFD29922);         // Yellow for warnings only
 
-  // Status Colors
-  static const Color success = Color(0xFF22C55E);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
-
-  static const Color shadowColor = Color(0x1F4A90FF); // Soft blue glow shadow color
-
-  // Gradients
-  static const LinearGradient brandGradient = LinearGradient(
-    colors: [
-      Color(0xFF00D4AA),
-      Color(0xFF4A90FF),
-    ],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient aiGradient = LinearGradient(
-    colors: [
-      Color(0xFF8B5CF6),
-      Color(0xFF6366F1),
-    ],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient backgroundGradient = LinearGradient(
-    colors: [
-      Color(0xFF0A0F2C),
-      Color(0xFF111936),
-    ],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
+  // Backward Compatibility (for existing code)
+  static const Color primary = accent;
+  static const Color primaryBackground = background;
+  static const Color primaryMuted = card;
+  static const Color accentTeal = accent;
+  static const Color accentElectricBlue = accent;
+  static const Color secondaryAccent = accent;
 }

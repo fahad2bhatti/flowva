@@ -59,11 +59,11 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top Bar ──
+            // Top Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -73,12 +73,13 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.elevatedSurface,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: const Icon(
                         Icons.arrow_back_rounded,
-                        color: AppColors.text,
+                        color: AppColors.textSecondary,
                         size: 20,
                       ),
                     ),
@@ -87,10 +88,11 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                   const Text(
                     'Join Group',
                     style: TextStyle(
-                      color: AppColors.text,
+                      color: AppColors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
+                      fontFamily: 'Inter',
                     ),
                   ),
                 ],
@@ -103,20 +105,19 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    // ── Icon ──
+                    // Icon
                     Center(
                       child: Container(
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          gradient: AppColors.aiGradient,
+                          color: AppColors.accent,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.aiAccent.withValues(alpha: 0.4),
-                              blurRadius: 20,
-                              spreadRadius: 4,
+                              color: AppColors.accent.withValues(alpha: 0.3),
+                              blurRadius: 16,
+                              spreadRadius: 2,
                             ),
                           ],
                         ),
@@ -129,14 +130,15 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // ── Title ──
+                    // Title
                     const Center(
                       child: Text(
                         'Enter Invite Code',
                         style: TextStyle(
-                          color: AppColors.text,
+                          color: AppColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
@@ -148,29 +150,29 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 13,
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
                     const SizedBox(height: 32),
 
-                    // ── Code Input ──
+                    // Code Input
                     const Text(
                       'Invite Code',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.3,
+                        fontFamily: 'Inter',
                       ),
                     ),
                     const SizedBox(height: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.elevatedSurface,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: AppColors.textMuted.withValues(alpha: 0.2),
-                        ),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: TextField(
                         controller: _codeController,
@@ -182,10 +184,11 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                           ),
                         ],
                         style: const TextStyle(
-                          color: AppColors.text,
+                          color: AppColors.textPrimary,
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 8,
+                          fontFamily: 'Inter',
                         ),
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
@@ -210,7 +213,7 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // ── Error Box ──
+                    // Error Box
                     if (_error != null) ...[
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -232,6 +235,7 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                                 style: const TextStyle(
                                   color: AppColors.error,
                                   fontSize: 13,
+                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ),
@@ -241,53 +245,45 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                       const SizedBox(height: 16),
                     ],
 
-                    // ── Join Button ──
-                    Container(
+                    // Join Button
+                    SizedBox(
                       width: double.infinity,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.aiGradient,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.aiAccent.withValues(alpha: 0.3),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: _isLoading ? null : _joinGroup,
-                          child: Center(
-                            child: _isLoading
-                                ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
+                          elevation: 0,
+                        ),
+                        onPressed: _isLoading ? null : _joinGroup,
+                        child: _isLoading
+                            ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                            : const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.login_rounded,
+                                color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              'Join Group',
+                              style: TextStyle(
                                 color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter',
                               ),
-                            )
-                                : const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.login_rounded,
-                                    color: Colors.white, size: 20),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Join Group',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),

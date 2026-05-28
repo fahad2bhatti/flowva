@@ -32,26 +32,19 @@ class PostCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.elevatedSurface,
-        borderRadius: BorderRadius.circular(20),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.accentTeal.withValues(alpha: 0.08),
+          color: AppColors.border,
+          width: 0.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          // ── Header ──
+          // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
             child: Row(
               children: [
                 // Avatar
@@ -59,11 +52,11 @@ class PostCard extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    gradient: AppColors.brandGradient,
+                    color: AppColors.accent,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.accentTeal.withValues(alpha: 0.3),
-                      width: 2,
+                      color: AppColors.accent.withValues(alpha: 0.3),
+                      width: 1.5,
                     ),
                   ),
                   alignment: Alignment.center,
@@ -84,9 +77,10 @@ class PostCard extends StatelessWidget {
                       Text(
                         post.authorName,
                         style: const TextStyle(
-                          color: AppColors.text,
+                          color: AppColors.textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 15,
+                          fontFamily: 'Inter',
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -96,15 +90,16 @@ class PostCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 7, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.aiAccent.withValues(alpha: 0.15),
+                              color: AppColors.accent.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               post.authorRole,
-                              style: const TextStyle(
-                                color: AppColors.aiAccent,
+                              style: TextStyle(
+                                color: AppColors.accent,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter',
                               ),
                             ),
                           ),
@@ -114,6 +109,7 @@ class PostCard extends StatelessWidget {
                             style: const TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 11,
+                              fontFamily: 'Inter',
                             ),
                           ),
                         ],
@@ -130,20 +126,21 @@ class PostCard extends StatelessWidget {
             ),
           ),
 
-          // ── Content ──
+          // Content
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
             child: Text(
               post.content,
               style: const TextStyle(
-                color: AppColors.text,
+                color: AppColors.textPrimary,
                 fontSize: 15,
                 height: 1.5,
+                fontFamily: 'Inter',
               ),
             ),
           ),
 
-          // ── Image (if any) ──
+          // Image (if any)
           if (post.fileUrls.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.zero,
@@ -156,10 +153,10 @@ class PostCard extends StatelessWidget {
               ),
             ),
 
-          // ── Reactions count row ──
+          // Reactions count row
           if (_totalReactions(post) > 0)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 0),
               child: Row(
                 children: [
                   _reactionBubble('👍', post.reactions['like']?.length ?? 0),
@@ -171,24 +168,25 @@ class PostCard extends StatelessWidget {
                     style: const TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 12,
+                      fontFamily: 'Inter',
                     ),
                   ),
                 ],
               ),
             ),
 
-          // ── Divider ──
+          // Divider
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Divider(
-              color: AppColors.textMuted.withValues(alpha: 0.15),
+              color: AppColors.border,
               height: 1,
             ),
           ),
 
-          // ── Action Buttons ──
+          // Action Buttons
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
+            padding: const EdgeInsets.fromLTRB(6, 0, 6, 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -197,7 +195,7 @@ class PostCard extends StatelessWidget {
                       ? Icons.thumb_up_rounded
                       : Icons.thumb_up_outlined,
                   label: 'Like',
-                  color: isLiked ? AppColors.accentTeal : AppColors.textMuted,
+                  color: isLiked ? AppColors.accent : AppColors.textMuted,
                   onTap: () => FeedController.instance
                       .addReaction(groupId, post.id, 'like'),
                 ),
@@ -217,9 +215,9 @@ class PostCard extends StatelessWidget {
             ),
           ),
 
-          // ── Emoji Reactions Row ──
+          // Emoji Reactions Row
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
             child: Row(
               children: [
                 _EmojiReaction(
@@ -285,8 +283,6 @@ class PostCard extends StatelessWidget {
   }
 }
 
-// ── Action Button ──────────────────────────────────────────────────────────────
-
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -317,6 +313,7 @@ class _ActionButton extends StatelessWidget {
                 color: color,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
+                fontFamily: 'Inter',
               ),
             ),
           ],
@@ -325,8 +322,6 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
-
-// ── Emoji Reaction ─────────────────────────────────────────────────────────────
 
 class _EmojiReaction extends StatelessWidget {
   final String emoji;
@@ -356,13 +351,14 @@ class _EmojiReaction extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: isReacted
-              ? AppColors.accentTeal.withValues(alpha: 0.15)
-              : AppColors.primaryBackground.withValues(alpha: 0.5),
+              ? AppColors.accent.withValues(alpha: 0.12)
+              : AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isReacted
-                ? AppColors.accentTeal.withValues(alpha: 0.4)
-                : AppColors.textMuted.withValues(alpha: 0.15),
+                ? AppColors.accent.withValues(alpha: 0.3)
+                : AppColors.border,
+            width: 0.5,
           ),
         ),
         child: Row(
@@ -374,11 +370,10 @@ class _EmojiReaction extends StatelessWidget {
               Text(
                 '${users.length}',
                 style: TextStyle(
-                  color: isReacted
-                      ? AppColors.accentTeal
-                      : AppColors.textMuted,
+                  color: isReacted ? AppColors.accent : AppColors.textMuted,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
+                  fontFamily: 'Inter',
                 ),
               ),
             ],

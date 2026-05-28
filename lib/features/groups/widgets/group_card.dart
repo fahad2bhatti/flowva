@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../data/models/group_model.dart';
@@ -34,7 +33,7 @@ class _GroupCardState extends State<GroupCard>
       lowerBound: 0.0,
       upperBound: 0.03,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.97).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
   }
@@ -44,17 +43,18 @@ class _GroupCardState extends State<GroupCard>
     _scaleController.dispose();
     super.dispose();
   }
+
   void _showInviteCode(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
-        decoration: const BoxDecoration(
-          color: Color(0xFF141A3A),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          border: Border(
-            top: BorderSide(color: Color(0x1A00D4AA)),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: const Border(
+            top: BorderSide(color: AppColors.border, width: 0.5),
           ),
         ),
         child: Column(
@@ -64,7 +64,7 @@ class _GroupCardState extends State<GroupCard>
             Container(
               width: 40,
               height: 4,
-              margin: const EdgeInsets.only(bottom: 24),
+              margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 color: AppColors.textMuted.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(4),
@@ -73,9 +73,10 @@ class _GroupCardState extends State<GroupCard>
             const Text(
               'Invite Code',
               style: TextStyle(
-                color: AppColors.text,
+                color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
               ),
             ),
             const SizedBox(height: 6),
@@ -85,33 +86,42 @@ class _GroupCardState extends State<GroupCard>
               style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13,
+                fontFamily: 'Inter',
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
             // Code box
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
               decoration: BoxDecoration(
-                color: AppColors.elevatedSurface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.accentTeal.withValues(alpha: 0.3),
-                ),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.border, width: 0.5),
               ),
               child: Text(
                 widget.group.inviteCode,
                 style: const TextStyle(
-                  color: AppColors.accentTeal,
+                  color: AppColors.accent,
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 12,
+                  fontFamily: 'Inter',
                 ),
               ),
             ),
             const SizedBox(height: 20),
             // Copy button
-            GestureDetector(
-              onTap: () {
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                minimumSize: const Size(double.infinity, 48),
+                elevation: 0,
+              ),
+              onPressed: () {
                 Clipboard.setData(
                   ClipboardData(text: widget.group.inviteCode),
                 );
@@ -119,7 +129,7 @@ class _GroupCardState extends State<GroupCard>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('Invite code copied!'),
-                    backgroundColor: AppColors.success,
+                    backgroundColor: AppColors.accent,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -129,35 +139,21 @@ class _GroupCardState extends State<GroupCard>
                   ),
                 );
               },
-              child: Container(
-                width: double.infinity,
-                height: 52,
-                decoration: BoxDecoration(
-                  gradient: AppColors.brandGradient,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.accentTeal.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.copy_rounded, color: Colors.white, size: 18),
+                  SizedBox(width: 8),
+                  Text(
+                    'Copy Code',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Inter',
                     ),
-                  ],
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.copy_rounded, color: Colors.white, size: 18),
-                    SizedBox(width: 8),
-                    Text(
-                      'Copy Code',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -166,16 +162,10 @@ class _GroupCardState extends State<GroupCard>
     );
   }
 
-  // ─── Colour helpers ─────────────────────────────────────────────────────────
-
-  Color _parseColor(String hex) {
-    try {
-      final cleaned = hex.replaceAll('#', '');
-      final value = int.parse('FF$cleaned', radix: 16);
-      return Color(value);
-    } catch (_) {
-      return AppColors.accentTeal;
-    }
+  // FIX: Force all group avatars to use graphite color (no green/teal/blue)
+  Color _getAvatarColor() {
+    // All groups now use graphite accent - no more green/teal/blue
+    return AppColors.accent;
   }
 
   String _formatLastActive(DateTime dt) {
@@ -188,13 +178,11 @@ class _GroupCardState extends State<GroupCard>
     return '${dt.day}/${dt.month}/${dt.year}';
   }
 
-  // ─── Build ───────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
-    final groupColor = _parseColor(widget.group.color);
+    final avatarColor = _getAvatarColor();
     final lastActiveStr =
-        _formatLastActive(widget.group.lastActive.toDate());
+    _formatLastActive(widget.group.lastActive.toDate());
     final initials = widget.group.name.isNotEmpty
         ? widget.group.name.trim()[0].toUpperCase()
         : 'G';
@@ -206,7 +194,7 @@ class _GroupCardState extends State<GroupCard>
         widget.onTap();
       },
       onTapCancel: () => _scaleController.reverse(),
-      onLongPress: () => _showInviteCode(context), // ← yeh add karo
+      onLongPress: () => _showInviteCode(context),
       child: AnimatedBuilder(
         animation: _scaleAnimation,
         builder: (context, child) => Transform.scale(
@@ -214,128 +202,111 @@ class _GroupCardState extends State<GroupCard>
           child: child,
         ),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 14),
+          margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: groupColor.withValues(alpha: 0.12),
-                blurRadius: 20,
-                offset: const Offset(0, 6),
-              ),
-            ],
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border, width: 0.5),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF141A3A).withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: groupColor.withValues(alpha: 0.18),
-                    width: 1.2,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    // ── Group Color Avatar ───────────────────────────────────
-                    _GroupAvatar(color: groupColor, initials: initials),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Group Avatar - Now always Graphite
+                _GroupAvatar(color: avatarColor, initials: initials),
 
-                    const SizedBox(width: 14),
+                const SizedBox(width: 14),
 
-                    // ── Group Info ────────────────────────────────────────────
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                // Group Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          // Name row
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  widget.group.name,
-                                  style: const TextStyle(
-                                    color: AppColors.text,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: -0.2,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              // Unread badge
-                              if (widget.unreadCount > 0) ...[
-                                const SizedBox(width: 8),
-                                _UnreadBadge(count: widget.unreadCount),
-                              ],
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-
-                          // Description (if present)
-                          if (widget.group.description.isNotEmpty)
-                            Text(
-                              widget.group.description,
+                          Expanded(
+                            child: Text(
+                              widget.group.name,
                               style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 13,
+                                color: AppColors.textPrimary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.2,
+                                fontFamily: 'Inter',
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
+                          ),
+                          if (widget.unreadCount > 0) ...[
+                            const SizedBox(width: 8),
+                            _UnreadBadge(count: widget.unreadCount),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
 
-                          const SizedBox(height: 8),
+                      // Description (if present)
+                      if (widget.group.description.isNotEmpty)
+                        Text(
+                          widget.group.description,
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
+                            fontFamily: 'Inter',
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
 
-                          // Member count + last active row
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.group_outlined,
-                                size: 13,
-                                color: AppColors.textMuted,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${widget.group.memberCount} member${widget.group.memberCount == 1 ? '' : 's'}',
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Icon(
-                                Icons.access_time_rounded,
-                                size: 13,
-                                color: AppColors.textMuted,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                lastActiveStr,
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
+                      const SizedBox(height: 8),
+
+                      // Member count + last active row
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.group_outlined,
+                            size: 12,
+                            color: AppColors.textMuted,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${widget.group.memberCount} member${widget.group.memberCount == 1 ? '' : 's'}',
+                            style: const TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 11,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 12,
+                            color: AppColors.textMuted,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            lastActiveStr,
+                            style: const TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 11,
+                              fontFamily: 'Inter',
+                            ),
                           ),
                         ],
                       ),
-                    ),
-
-                    // ── Chevron ───────────────────────────────────────────────
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: AppColors.textMuted,
-                      size: 22,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+
+                // Chevron
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.textMuted,
+                  size: 20,
+                ),
+              ],
             ),
           ),
         ),
@@ -343,8 +314,6 @@ class _GroupCardState extends State<GroupCard>
     );
   }
 }
-
-// ─── Group Avatar ─────────────────────────────────────────────────────────────
 
 class _GroupAvatar extends StatelessWidget {
   final Color color;
@@ -358,20 +327,13 @@ class _GroupAvatar extends StatelessWidget {
       width: 52,
       height: 52,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            color,
-            color.withValues(alpha: 0.6),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
+        color: color,
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.35),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: color.withValues(alpha: 0.25),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -382,13 +344,12 @@ class _GroupAvatar extends StatelessWidget {
           color: Colors.white,
           fontSize: 22,
           fontWeight: FontWeight.bold,
+          fontFamily: 'Inter',
         ),
       ),
     );
   }
 }
-
-// ─── Unread Badge ─────────────────────────────────────────────────────────────
 
 class _UnreadBadge extends StatelessWidget {
   final int count;
@@ -399,7 +360,7 @@ class _UnreadBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        gradient: AppColors.brandGradient,
+        color: AppColors.accent,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -408,6 +369,7 @@ class _UnreadBadge extends StatelessWidget {
           color: Colors.white,
           fontSize: 11,
           fontWeight: FontWeight.bold,
+          fontFamily: 'Inter',
         ),
       ),
     );

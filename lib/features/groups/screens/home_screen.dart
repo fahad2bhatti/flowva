@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/skeleton_widgets.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../auth/screens/login_screen.dart';
 import '../controllers/group_controller.dart';
@@ -73,18 +73,19 @@ class _HomeScreenState extends State<HomeScreen>
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.accentTeal.withValues(alpha: 0.1),
+              color: AppColors.accent.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.accentTeal, size: 36),
+            child: Icon(icon, color: AppColors.accent, size: 36),
           ),
           const SizedBox(height: 16),
           Text(
             title,
             style: const TextStyle(
-              color: AppColors.text,
+              color: AppColors.textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.bold,
+              fontFamily: 'Inter',
             ),
           ),
           const SizedBox(height: 8),
@@ -93,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen>
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,
+              fontFamily: 'Inter',
             ),
           ),
         ],
@@ -132,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen>
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
           itemCount: filtered.length,
           itemBuilder: (ctx, i) => GroupCard(
             group: filtered[i],
@@ -148,16 +150,12 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ─── Greeting helper ─────────────────────────────────────────────────────────
-
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Good Morning';
     if (hour < 17) return 'Good Afternoon';
     return 'Good Evening';
   }
-
-  // ─── Bottom sheet ────────────────────────────────────────────────────────────
 
   void _showAddGroupSheet() {
     showModalBottomSheet(
@@ -183,15 +181,13 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ─── Logout ───────────────────────────────────────────────────────────────────
-
   void _handleLogout() async {
     try {
       await AuthController.instance.logout();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (route) => false,
+              (route) => false,
         );
       }
     } catch (e) {
@@ -217,18 +213,17 @@ class _HomeScreenState extends State<HomeScreen>
   PageRoute _slideRoute(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) => SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(1, 0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-        child: child,
-      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+          SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+            child: child,
+          ),
       transitionDuration: const Duration(milliseconds: 300),
     );
   }
-
-  // ─── Nav items ───────────────────────────────────────────────────────────────
 
   static const _navItems = [
     _NavItem(icon: Icons.home_rounded, label: 'Home'),
@@ -237,8 +232,6 @@ class _HomeScreenState extends State<HomeScreen>
     _NavItem(icon: Icons.auto_awesome_rounded, label: 'AI'),
     _NavItem(icon: Icons.person_outline_rounded, label: 'Profile'),
   ];
-
-  // ─── Build ────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -249,178 +242,173 @@ class _HomeScreenState extends State<HomeScreen>
         : 'F';
 
     return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // ── Header ──────────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                child: Row(
-                  children: [
-                    // Greeting
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _getGreeting(),
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getGreeting(),
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Inter',
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            displayName,
-                            style: const TextStyle(
-                              color: AppColors.text,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: -0.4,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          displayName,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.4,
+                            fontFamily: 'Inter',
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _IconButton(
+                    icon: Icons.notifications_none_rounded,
+                    onTap: () {},
+                    hasBadge: true,
+                  ),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: _handleLogout,
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: AppColors.accent,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.accent.withValues(alpha: 0.25),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        initials,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
                     ),
-                    // Notification bell
-                    _IconButton(
-                      icon: Icons.notifications_none_rounded,
-                      onTap: () {},
-                      hasBadge: true,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Search bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _GlassSearchBar(
+                controller: _searchController,
+                onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Section title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'My Groups',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.3,
+                      fontFamily: 'Inter',
                     ),
-                    const SizedBox(width: 10),
-                    // Avatar
-                    GestureDetector(
-                      onTap: _handleLogout,
-                      child: Container(
-                        width: 42,
-                        height: 42,
+                  ),
+                  StreamBuilder<List<GroupModel>>(
+                    stream: GroupController.instance.getUserGroups(),
+                    builder: (ctx, snap) {
+                      final count = snap.data?.length ?? 0;
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          gradient: AppColors.brandGradient,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.accentTeal.withValues(alpha: 0.3),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                          color: AppColors.accent.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        alignment: Alignment.center,
                         child: Text(
-                          initials,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
+                          '$count',
+                          style: TextStyle(
+                            color: AppColors.accent,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Inter',
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
+                      );
+                    },
+                  ),
+                ],
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 14),
 
-              // ── Search bar ──────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _GlassSearchBar(
-                  controller: _searchController,
-                  onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Section title ───────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'My Groups',
-                      style: TextStyle(
-                        color: AppColors.text,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                    StreamBuilder<List<GroupModel>>(
-                      stream: GroupController.instance.getUserGroups(),
-                      builder: (ctx, snap) {
-                        final count = snap.data?.length ?? 0;
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.accentTeal.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            '$count',
-                            style: const TextStyle(
-                              color: AppColors.accentTeal,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              // ── Group list ──────────────────────────────────────────────────
-              const SizedBox(height: 14),
-
-              // ── Body ────────────────────────────────────────────────────────
-              Expanded(
-                child: _buildBody(),
-              ),
-            ],
-          ),
+            // Body
+            Expanded(
+              child: _buildBody(),
+            ),
+          ],
         ),
       ),
 
-      // ── FAB ─────────────────────────────────────────────────────────────────
+      // FAB
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
-        child: GestureDetector(
-          onTap: _showAddGroupSheet,
-          child: Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              gradient: AppColors.brandGradient,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.accentTeal.withValues(alpha: 0.4),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: AppColors.accent,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.accent.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: IconButton(
+            onPressed: _showAddGroupSheet,
+            icon: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
           ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-      // ── Bottom Nav Dock ─────────────────────────────────────────────────────
       bottomNavigationBar: _BottomNavDock(
         selectedIndex: _selectedIndex,
         items: _navItems,
@@ -430,60 +418,43 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-// ─── Glass Search Bar ─────────────────────────────────────────────────────────
-
 class _GlassSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
 
-  const _GlassSearchBar(
-      {required this.controller, required this.onChanged});
+  const _GlassSearchBar({required this.controller, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFF141A3A).withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: AppColors.accentTeal.withValues(alpha: 0.12),
-              width: 1,
-            ),
-          ),
-          child: TextField(
-            controller: controller,
-            onChanged: onChanged,
-            style: const TextStyle(color: AppColors.text, fontSize: 14),
-            decoration: const InputDecoration(
-              hintText: 'Search groups…',
-              hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14),
-              prefixIcon: Icon(Icons.search_rounded,
-                  color: AppColors.textMuted, size: 20),
-              border: InputBorder.none,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontFamily: 'Inter'),
+        decoration: const InputDecoration(
+          hintText: 'Search groups…',
+          hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14, fontFamily: 'Inter'),
+          prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted, size: 20),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
     );
   }
 }
 
-// ─── Icon Button ──────────────────────────────────────────────────────────────
-
 class _IconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool hasBadge;
 
-  const _IconButton(
-      {required this.icon, required this.onTap, this.hasBadge = false});
+  const _IconButton({required this.icon, required this.onTap, this.hasBadge = false});
 
   @override
   Widget build(BuildContext context) {
@@ -495,11 +466,9 @@ class _IconButton extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: AppColors.elevatedSurface.withValues(alpha: 0.6),
-              borderRadius: BorderRadius.circular(13),
-              border: Border.all(
-                color: AppColors.accentTeal.withValues(alpha: 0.08),
-              ),
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border, width: 0.5),
             ),
             child: Icon(icon, color: AppColors.textSecondary, size: 20),
           ),
@@ -511,7 +480,7 @@ class _IconButton extends StatelessWidget {
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: AppColors.accentTeal,
+                  color: AppColors.accent,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -521,39 +490,18 @@ class _IconButton extends StatelessWidget {
     );
   }
 }
-
-// ─── Loading State ────────────────────────────────────────────────────────────
-
 class _LoadingState extends StatelessWidget {
   const _LoadingState();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 36,
-            height: 36,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.5,
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppColors.accentTeal),
-            ),
-          ),
-          const SizedBox(height: 14),
-          const Text(
-            'Loading your groups…',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-          ),
-        ],
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+      itemCount: 3,
+      itemBuilder: (ctx, i) => const SkeletonGroupCard(),
     );
   }
 }
-
-// ─── Error State ──────────────────────────────────────────────────────────────
 
 class _ErrorState extends StatelessWidget {
   final String message;
@@ -581,16 +529,17 @@ class _ErrorState extends StatelessWidget {
             const Text(
               'Something went wrong',
               style: TextStyle(
-                  color: AppColors.text,
+                  color: AppColors.textPrimary,
                   fontSize: 16,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter'),
             ),
             const SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13),
+                  color: AppColors.textSecondary, fontSize: 13, fontFamily: 'Inter'),
             ),
           ],
         ),
@@ -598,8 +547,6 @@ class _ErrorState extends StatelessWidget {
     );
   }
 }
-
-// ─── Empty State ──────────────────────────────────────────────────────────────
 
 class _EmptyState extends StatelessWidget {
   final bool isSearching;
@@ -620,24 +567,16 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Icon
             Container(
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.accentTeal.withValues(alpha: 0.15),
-                    AppColors.accentElectricBlue.withValues(alpha: 0.08),
-                  ],
-                ),
+                color: AppColors.accent.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isSearching
-                    ? Icons.search_off_rounded
-                    : Icons.group_add_outlined,
-                color: AppColors.accentTeal,
+                isSearching ? Icons.search_off_rounded : Icons.group_add_outlined,
+                color: AppColors.accent,
                 size: 36,
               ),
             ),
@@ -645,19 +584,20 @@ class _EmptyState extends StatelessWidget {
             Text(
               isSearching ? 'No results found' : 'No groups yet',
               style: const TextStyle(
-                color: AppColors.text,
+                color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
               ),
             ),
             const SizedBox(height: 8),
             Text(
               isSearching
                   ? 'Try a different search term'
-                  : 'Create or join a group to start collaborating with your team.',
+                  : 'Create or join a group to start collaborating.',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13, height: 1.5),
+                  color: AppColors.textSecondary, fontSize: 13, height: 1.5, fontFamily: 'Inter'),
             ),
             if (!isSearching) ...[
               const SizedBox(height: 28),
@@ -667,7 +607,6 @@ class _EmptyState extends StatelessWidget {
                     child: _EmptyActionButton(
                       label: 'Create Group',
                       icon: Icons.add_rounded,
-                      gradient: AppColors.brandGradient,
                       onTap: onCreateTap,
                     ),
                   ),
@@ -676,7 +615,6 @@ class _EmptyState extends StatelessWidget {
                     child: _EmptyActionButton(
                       label: 'Join Group',
                       icon: Icons.link_rounded,
-                      gradient: AppColors.aiGradient,
                       onTap: onJoinTap,
                     ),
                   ),
@@ -693,54 +631,44 @@ class _EmptyState extends StatelessWidget {
 class _EmptyActionButton extends StatelessWidget {
   final String label;
   final IconData icon;
-  final Gradient gradient;
   final VoidCallback onTap;
 
   const _EmptyActionButton({
     required this.label,
     required this.icon,
-    required this.gradient,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.accent,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.accentTeal.withValues(alpha: 0.25),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+        elevation: 0,
+      ),
+      onPressed: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.white, size: 18),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              fontFamily: 'Inter',
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
-
-// ─── Bottom Nav Dock ──────────────────────────────────────────────────────────
 
 class _NavItem {
   final IconData icon;
@@ -761,75 +689,55 @@ class _BottomNavDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: const EdgeInsets.only(top: 10, bottom: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0D1232).withValues(alpha: 0.92),
-            border: Border(
-              top: BorderSide(
-                color: AppColors.accentTeal.withValues(alpha: 0.1),
-                width: 1,
+    return Container(
+      padding: const EdgeInsets.only(top: 8, bottom: 12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border(
+          top: BorderSide(color: AppColors.border, width: 0.5),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(items.length, (i) {
+          if (i == 2) return const SizedBox(width: 56);
+          final isSelected = selectedIndex == i;
+          return GestureDetector(
+            onTap: () => onItemSelected(i),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.accent.withValues(alpha: 0.12) : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    items[i].icon,
+                    color: isSelected ? AppColors.accent : AppColors.textMuted,
+                    size: 22,
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    items[i].label,
+                    style: TextStyle(
+                      color: isSelected ? AppColors.accent : AppColors.textMuted,
+                      fontSize: 10,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(items.length, (i) {
-              // Leave center slot for FAB
-              if (i == 2) return const SizedBox(width: 56);
-              final isSelected = selectedIndex == i;
-              return GestureDetector(
-                onTap: () => onItemSelected(i),
-                behavior: HitTestBehavior.opaque,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.accentTeal.withValues(alpha: 0.12)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        items[i].icon,
-                        color: isSelected
-                            ? AppColors.accentTeal
-                            : AppColors.textMuted,
-                        size: 22,
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        items[i].label,
-                        style: TextStyle(
-                          color: isSelected
-                              ? AppColors.accentTeal
-                              : AppColors.textMuted,
-                          fontSize: 10,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
 }
-
-// ─── Add Group Bottom Sheet ────────────────────────────────────────────────────
 
 class _AddGroupBottomSheet extends StatelessWidget {
   final VoidCallback onCreateGroup;
@@ -842,72 +750,58 @@ class _AddGroupBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 36),
-          decoration: const BoxDecoration(
-            color: Color(0xFF141A3A),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-            border: Border(
-              top: BorderSide(
-                color: Color(0x1A00D4AA),
-                width: 1,
-              ),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: const Border(
+          top: BorderSide(color: AppColors.border, width: 0.5),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              color: AppColors.textMuted.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(4),
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Drag handle
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  color: AppColors.textMuted.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const Text(
-                'Add a Group',
-                style: TextStyle(
-                  color: AppColors.text,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Start a new workspace or hop into one',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-              ),
-              const SizedBox(height: 28),
-
-              // Create Group option
-              _SheetOption(
-                icon: Icons.add_circle_outline_rounded,
-                title: 'Create Group',
-                subtitle: 'Start a new group and invite your team',
-                gradient: AppColors.brandGradient,
-                onTap: onCreateGroup,
-              ),
-              const SizedBox(height: 14),
-
-              // Join Group option
-              _SheetOption(
-                icon: Icons.link_rounded,
-                title: 'Join Group',
-                subtitle: 'Enter an invite code to join an existing group',
-                gradient: AppColors.aiGradient,
-                onTap: onJoinGroup,
-              ),
-              const SizedBox(height: 8),
-            ],
+          const Text(
+            'Add a Group',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Inter',
+            ),
           ),
-        ),
+          const SizedBox(height: 6),
+          const Text(
+            'Start a new workspace or hop into one',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 13, fontFamily: 'Inter'),
+          ),
+          const SizedBox(height: 24),
+
+          _SheetOption(
+            icon: Icons.add_circle_outline_rounded,
+            title: 'Create Group',
+            subtitle: 'Start a new group and invite your team',
+            onTap: onCreateGroup,
+          ),
+          const SizedBox(height: 12),
+
+          _SheetOption(
+            icon: Icons.link_rounded,
+            title: 'Join Group',
+            subtitle: 'Enter an invite code to join an existing group',
+            onTap: onJoinGroup,
+          ),
+        ],
       ),
     );
   }
@@ -917,14 +811,12 @@ class _SheetOption extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Gradient gradient;
   final VoidCallback onTap;
 
   const _SheetOption({
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.gradient,
     required this.onTap,
   });
 
@@ -933,14 +825,11 @@ class _SheetOption extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.elevatedSurface.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: AppColors.accentTeal.withValues(alpha: 0.08),
-            width: 1,
-          ),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Row(
           children: [
@@ -948,10 +837,10 @@ class _SheetOption extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                gradient: gradient,
+                color: AppColors.accent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(icon, color: Colors.white, size: 22),
+              child: Icon(icon, color: AppColors.accent, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -961,16 +850,17 @@ class _SheetOption extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      color: AppColors.text,
+                      color: AppColors.textPrimary,
                       fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Inter',
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: const TextStyle(
-                        color: AppColors.textSecondary, fontSize: 12),
+                        color: AppColors.textSecondary, fontSize: 12, fontFamily: 'Inter'),
                   ),
                 ],
               ),

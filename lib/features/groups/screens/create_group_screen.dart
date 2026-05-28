@@ -14,17 +14,17 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   final _descController = TextEditingController();
   bool _isLoading = false;
   String? _error;
-  String _selectedColor = '#00D4AA';
+  String _selectedColor = '#4B5563';
 
   final List<Map<String, dynamic>> _colorOptions = [
-    {'hex': '#00D4AA', 'color': const Color(0xFF00D4AA), 'label': 'Teal'},
-    {'hex': '#4A90FF', 'color': const Color(0xFF4A90FF), 'label': 'Blue'},
+    {'hex': '#4B5563', 'color': const Color(0xFF4B5563), 'label': 'Graphite'},
+    {'hex': '#6B7280', 'color': const Color(0xFF6B7280), 'label': 'Gray'},
+    {'hex': '#9CA3AF', 'color': const Color(0xFF9CA3AF), 'label': 'Light Gray'},
+    {'hex': '#3B82F6', 'color': const Color(0xFF3B82F6), 'label': 'Blue'},
     {'hex': '#8B5CF6', 'color': const Color(0xFF8B5CF6), 'label': 'Purple'},
-    {'hex': '#F59E0B', 'color': const Color(0xFFF59E0B), 'label': 'Amber'},
-    {'hex': '#EF4444', 'color': const Color(0xFFEF4444), 'label': 'Red'},
-    {'hex': '#22C55E', 'color': const Color(0xFF22C55E), 'label': 'Green'},
     {'hex': '#EC4899', 'color': const Color(0xFFEC4899), 'label': 'Pink'},
-    {'hex': '#F97316', 'color': const Color(0xFFF97316), 'label': 'Orange'},
+    {'hex': '#F59E0B', 'color': const Color(0xFFF59E0B), 'label': 'Amber'},
+    {'hex': '#10B981', 'color': const Color(0xFF10B981), 'label': 'Green'},
   ];
 
   @override
@@ -63,11 +63,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top Bar ──
+            // Top Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -77,12 +77,13 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.elevatedSurface,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: const Icon(
                         Icons.arrow_back_rounded,
-                        color: AppColors.text,
+                        color: AppColors.textSecondary,
                         size: 20,
                       ),
                     ),
@@ -91,10 +92,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   const Text(
                     'Create Group',
                     style: TextStyle(
-                      color: AppColors.text,
+                      color: AppColors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
+                      fontFamily: 'Inter',
                     ),
                   ),
                 ],
@@ -107,8 +109,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    // ── Color Preview Circle ──
+                    // Color Preview Circle
                     Center(
                       child: Container(
                         width: 80,
@@ -122,9 +123,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                             BoxShadow(
                               color: (_colorOptions.firstWhere(
                                     (c) => c['hex'] == _selectedColor,
-                              )['color'] as Color).withValues(alpha: 0.4),
-                              blurRadius: 20,
-                              spreadRadius: 4,
+                              )['color'] as Color).withValues(alpha: 0.3),
+                              blurRadius: 16,
+                              spreadRadius: 2,
                             ),
                           ],
                         ),
@@ -137,36 +138,37 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // ── Group Name ──
+                    // Group Name
                     const Text(
                       'Group Name',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.3,
+                        fontFamily: 'Inter',
                       ),
                     ),
                     const SizedBox(height: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.elevatedSurface,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: AppColors.textMuted.withValues(alpha: 0.2),
-                        ),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: TextField(
                         controller: _nameController,
                         style: const TextStyle(
-                          color: AppColors.text,
+                          color: AppColors.textPrimary,
                           fontSize: 15,
+                          fontFamily: 'Inter',
                         ),
                         decoration: InputDecoration(
                           hintText: 'e.g. Design Team, Flutter Project...',
                           hintStyle: TextStyle(
-                            color: AppColors.textMuted.withValues(alpha: 0.8),
+                            color: AppColors.textMuted,
                             fontSize: 14,
+                            fontFamily: 'Inter',
                           ),
                           prefixIcon: const Icon(
                             Icons.group_rounded,
@@ -183,37 +185,38 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // ── Description ──
+                    // Description
                     const Text(
                       'Description (Optional)',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.3,
+                        fontFamily: 'Inter',
                       ),
                     ),
                     const SizedBox(height: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.elevatedSurface,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: AppColors.textMuted.withValues(alpha: 0.2),
-                        ),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: TextField(
                         controller: _descController,
                         maxLines: 3,
                         style: const TextStyle(
-                          color: AppColors.text,
+                          color: AppColors.textPrimary,
                           fontSize: 15,
+                          fontFamily: 'Inter',
                         ),
                         decoration: InputDecoration(
                           hintText: 'What is this group about?',
                           hintStyle: TextStyle(
-                            color: AppColors.textMuted.withValues(alpha: 0.8),
+                            color: AppColors.textMuted,
                             fontSize: 14,
+                            fontFamily: 'Inter',
                           ),
                           prefixIcon: const Padding(
                             padding: EdgeInsets.only(bottom: 40),
@@ -233,14 +236,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // ── Color Picker ──
+                    // Color Picker
                     const Text(
                       'Group Color',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.3,
+                        fontFamily: 'Inter',
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -261,15 +265,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                               shape: BoxShape.circle,
                               color: option['color'] as Color,
                               border: isSelected
-                                  ? Border.all(color: Colors.white, width: 3)
-                                  : null,
+                                  ? Border.all(color: Colors.white, width: 2.5)
+                                  : Border.all(color: AppColors.border, width: 0.5),
                               boxShadow: isSelected
                                   ? [
                                 BoxShadow(
                                   color: (option['color'] as Color)
-                                      .withValues(alpha: 0.5),
-                                  blurRadius: 12,
-                                  spreadRadius: 2,
+                                      .withValues(alpha: 0.4),
+                                  blurRadius: 10,
+                                  spreadRadius: 1,
                                 ),
                               ]
                                   : null,
@@ -284,7 +288,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // ── Error Box ──
+                    // Error Box
                     if (_error != null) ...[
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -306,6 +310,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                 style: const TextStyle(
                                   color: AppColors.error,
                                   fontSize: 13,
+                                  fontFamily: 'Inter',
                                 ),
                               ),
                             ),
@@ -315,53 +320,45 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                       const SizedBox(height: 16),
                     ],
 
-                    // ── Create Button ──
-                    Container(
+                    // Create Button
+                    SizedBox(
                       width: double.infinity,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.brandGradient,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.accentTeal.withValues(alpha: 0.3),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: _isLoading ? null : _createGroup,
-                          child: Center(
-                            child: _isLoading
-                                ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
+                          elevation: 0,
+                        ),
+                        onPressed: _isLoading ? null : _createGroup,
+                        child: _isLoading
+                            ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                            : const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add_rounded,
+                                color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              'Create Group',
+                              style: TextStyle(
                                 color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter',
                               ),
-                            )
-                                : const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.add_rounded,
-                                    color: Colors.white, size: 20),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Create Group',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),

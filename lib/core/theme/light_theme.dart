@@ -1,136 +1,118 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
-import '../constants/app_sizes.dart';
 
+// Light theme is similar but with light backgrounds
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.light,
-  scaffoldBackgroundColor: const Color(0xFFF8F9FD), // Sleek, breathable light gray-blue background
-  primaryColor: AppColors.accentTeal,
-  fontFamily: 'Inter',
-  
+  scaffoldBackgroundColor: const Color(0xFFF6F8FA),
+
   colorScheme: const ColorScheme.light(
-    primary: AppColors.accentTeal,
-    secondary: AppColors.accentElectricBlue,
-    surface: Colors.white, // Elevated surfaces (cards, modals) are pure white
+    primary: AppColors.accent,
+    secondary: AppColors.accent,
+    surface: Colors.white,
+    background: Color(0xFFF6F8FA),
     error: AppColors.error,
+    onPrimary: Colors.white,
+    onSecondary: Colors.white,
+    onSurface: Color(0xFF1F2937),
+    onBackground: Color(0xFF1F2937),
   ),
 
-  // Typography System (Parallel to dark mode, matching sizes & hierarchy)
-  textTheme: const TextTheme(
-    displayLarge: TextStyle(
-      fontSize: 48,
-      fontWeight: FontWeight.bold,
-      letterSpacing: -1.0,
-      color: AppColors.primaryBackground, // Use deep navy for high-contrast premium headers
-    ),
-    displayMedium: TextStyle(
-      fontSize: 32,
-      fontWeight: FontWeight.bold,
-      letterSpacing: -0.5,
-      color: AppColors.primaryBackground,
-    ),
-    titleLarge: TextStyle(
-      fontSize: 24,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color(0xFFF6F8FA),
+    elevation: 0,
+    centerTitle: false,
+    titleTextStyle: TextStyle(
+      color: Color(0xFF1F2937),
+      fontSize: 20,
       fontWeight: FontWeight.w600,
-      letterSpacing: -0.2,
-      color: AppColors.primaryBackground,
+      fontFamily: 'Inter',
     ),
-    bodyLarge: TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.normal,
-      color: Color(0xFF1E293B), // Premium dark slate for excellent readability
-    ),
-    bodyMedium: TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.normal,
-      color: Color(0xFF64748B), // Slate secondary text
-    ),
-    labelSmall: TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.w500,
-      color: Color(0xFF94A3B8), // Slate muted text
+    iconTheme: IconThemeData(
+      color: Color(0xFF6B7280),
+      size: 22,
     ),
   ),
 
-  // Card Theme Setup (Beautiful shadow/glow and crisp border)
   cardTheme: CardThemeData(
     color: Colors.white,
     elevation: 0,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppSizes.radiusCard),
-      side: BorderSide(
-        color: AppColors.accentElectricBlue.withValues(alpha: 0.08),
-        width: 1,
-      ),
+      borderRadius: BorderRadius.circular(12),
+      side: const BorderSide(color: Color(0xFFE5E7EB), width: 0.5),
     ),
+    margin: EdgeInsets.zero,
   ),
 
-  // Reusable Buttons Styling
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.accentTeal,
-      foregroundColor: Colors.white,
-      minimumSize: const Size(double.infinity, 56),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusButton),
-      ),
-      elevation: 0,
-      textStyle: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 0.5,
-      ),
-    ),
-  ),
-
-  // Custom Input Decoration Setup
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: const Color(0xFFEDF0F5), // Breathable filled background for text fields
-    hintStyle: const TextStyle(
-      color: Color(0xFF94A3B8),
-      fontSize: 14,
-    ),
-    prefixIconColor: const Color(0xFF64748B),
-    suffixIconColor: const Color(0xFF64748B),
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 18,
-    ),
+    fillColor: Colors.white,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppSizes.radiusInput),
-      borderSide: BorderSide.none,
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 0.5),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 0.5),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppSizes.radiusInput),
-      borderSide: const BorderSide(
-        color: AppColors.accentTeal,
-        width: 1.5,
-      ),
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.accent, width: 1),
     ),
-    errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppSizes.radiusInput),
-      borderSide: const BorderSide(
-        color: AppColors.error,
-        width: 1.5,
-      ),
+    hintStyle: const TextStyle(
+      color: Color(0xFF9CA3AF),
+      fontSize: 14,
+      fontFamily: 'Inter',
     ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppSizes.radiusInput),
-      borderSide: const BorderSide(
-        color: AppColors.error,
-        width: 1.5,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+  ),
+
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColors.accent,
+      foregroundColor: Colors.white,
+      minimumSize: const Size(double.infinity, 44),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      textStyle: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        fontFamily: 'Inter',
       ),
     ),
   ),
 
-  // Dialog & Modal Themes
-  dialogTheme: DialogThemeData(
-    backgroundColor: Colors.white,
-    elevation: 10,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppSizes.radiusModal),
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(
+      fontSize: 15,
+      color: Color(0xFF1F2937),
+      fontFamily: 'Inter',
     ),
+    bodyMedium: TextStyle(
+      fontSize: 14,
+      color: Color(0xFF6B7280),
+      fontFamily: 'Inter',
+    ),
+    bodySmall: TextStyle(
+      fontSize: 12,
+      color: Color(0xFF9CA3AF),
+      fontFamily: 'Inter',
+    ),
+  ),
+
+  dividerTheme: const DividerThemeData(
+    color: Color(0xFFE5E7EB),
+    thickness: 0.5,
+  ),
+
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    backgroundColor: Colors.white,
+    selectedItemColor: AppColors.accent,
+    unselectedItemColor: Color(0xFF9CA3AF),
+    type: BottomNavigationBarType.fixed,
+    elevation: 0,
   ),
 );
