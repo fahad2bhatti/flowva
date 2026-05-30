@@ -189,6 +189,8 @@ class GroupController {
           photoUrl: userData['photoUrl'] ?? doc.data()['photoUrl'] ?? '',
           role: doc.data()['role'] ?? 'member',
           joinedAt: doc.data()['joinedAt'] ?? Timestamp.now(),
+          lastActive: userData['lastActive'] ?? Timestamp.now(), // ← add karo
+          createdAt: userData['createdAt'] ?? Timestamp.now(),   // ← add karo
         ));
       }
     }

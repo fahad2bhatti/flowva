@@ -9,7 +9,10 @@ import '../widgets/group_card.dart';
 import 'create_group_screen.dart';
 import 'join_group_screen.dart';
 import '../../feed/screens/group_feed_screen.dart';
-
+import '../../tasks/controllers/task_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flowva/shared/widgets/bottom_nav_bar.dart';
+import '../../profile/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,22 +50,177 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  // ─────────────────────────────────────────────
+  // Tab Bodies
+  // ─────────────────────────────────────────────
+
   Widget _buildBody() {
     switch (_selectedIndex) {
-      case 0:
-        return _buildGroupsList();
-      case 1:
-        return _buildComingSoon('Feed', Icons.dynamic_feed_rounded);
-      case 2:
-        return _buildComingSoon('Tasks', Icons.check_circle_outline_rounded);
-      case 3:
-        return _buildComingSoon('AI Assistant', Icons.auto_awesome_rounded);
+      case 0: return _buildHomeTab();
+      case 1: return _buildFeedTab();
+      case 2: return _buildComingSoon('Tasks', Icons.check_circle_outline_rounded);
+      case 3: return _buildComingSoon('AI Assistant', Icons.auto_awesome_rounded);
       case 4:
-        return _buildComingSoon('Profile', Icons.person_outline_rounded);
-      default:
-        return _buildGroupsList();
+        return const ProfileScreen();
+      default: return _buildHomeTab();
     }
   }
+
+  // ─────────────────────────────────────────────
+  // Home Tab
+  // ─────────────────────────────────────────────
+
+  Widget _buildHomeTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _getGreeting(),
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      AuthController.instance.getCurrentUser()?.displayName ?? 'Flowva User',
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.4,
+                        fontFamily: 'Inter',
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              _IconBtn(icon: Icons.notifications_none_rounded, onTap: () {}, hasBadge: true),
+              const SizedBox(width: 10),
+              _AvatarBtn(onTap: _handleLogout),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Search
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _GlassSearchBar(
+            controller: _searchController,
+            onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Section title
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'My Groups',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.3,
+                  fontFamily: 'Inter',
+                ),
+              ),
+              StreamBuilder<List<GroupModel>>(
+                stream: GroupController.instance.getUserGroups(),
+                builder: (ctx, snap) {
+                  final count = snap.data?.length ?? 0;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '$count',
+                      style: const TextStyle(
+                        color: AppColors.accent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 14),
+
+        // Groups list
+        Expanded(child: _buildGroupsList()),
+      ],
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Feed Tab — Mujhe assign tasks
+  // ─────────────────────────────────────────────
+
+  Widget _buildFeedTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 20, 20, 4),
+          child: Text(
+            'My Tasks',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.4,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Text(
+            'Tasks assigned to you',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+
+        // Tasks stream
+        Expanded(child: _MyTasksFeed()),
+      ],
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Coming Soon
+  // ─────────────────────────────────────────────
 
   Widget _buildComingSoon(String title, IconData icon) {
     return Center(
@@ -102,6 +260,10 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  // ─────────────────────────────────────────────
+  // Groups List (Home tab)
+  // ─────────────────────────────────────────────
+
   Widget _buildGroupsList() {
     return StreamBuilder<List<GroupModel>>(
       stream: GroupController.instance.getUserGroups(),
@@ -114,22 +276,19 @@ class _HomeScreenState extends State<HomeScreen>
             message: snapshot.error.toString().replaceAll('Exception: ', ''),
           );
         }
+
         final groups = snapshot.data ?? [];
         final filtered = _searchQuery.isEmpty
             ? groups
-            : groups
-            .where((g) =>
+            : groups.where((g) =>
         g.name.toLowerCase().contains(_searchQuery) ||
-            g.description.toLowerCase().contains(_searchQuery))
-            .toList();
+            g.description.toLowerCase().contains(_searchQuery)).toList();
 
         if (filtered.isEmpty) {
           return _EmptyState(
             isSearching: _searchQuery.isNotEmpty,
-            onCreateTap: () => Navigator.push(
-                context, _slideRoute(const CreateGroupScreen())),
-            onJoinTap: () => Navigator.push(
-                context, _slideRoute(const JoinGroupScreen())),
+            onCreateTap: () => Navigator.push(context, _slideRoute(const CreateGroupScreen())),
+            onJoinTap: () => Navigator.push(context, _slideRoute(const JoinGroupScreen())),
           );
         }
 
@@ -138,17 +297,19 @@ class _HomeScreenState extends State<HomeScreen>
           itemCount: filtered.length,
           itemBuilder: (ctx, i) => GroupCard(
             group: filtered[i],
-            onTap: () {
-              Navigator.push(
-                context,
-                _slideRoute(GroupFeedScreen(group: filtered[i])),
-              );
-            },
+            onTap: () => Navigator.push(
+              context,
+              _slideRoute(GroupFeedScreen(group: filtered[i])),
+            ),
           ),
         );
       },
     );
   }
+
+  // ─────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -165,17 +326,11 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (ctx) => _AddGroupBottomSheet(
         onCreateGroup: () {
           Navigator.pop(ctx);
-          Navigator.push(
-            context,
-            _slideRoute(const CreateGroupScreen()),
-          );
+          Navigator.push(context, _slideRoute(const CreateGroupScreen()));
         },
         onJoinGroup: () {
           Navigator.pop(ctx);
-          Navigator.push(
-            context,
-            _slideRoute(const JoinGroupScreen()),
-          );
+          Navigator.push(context, _slideRoute(const JoinGroupScreen()));
         },
       ),
     );
@@ -191,17 +346,14 @@ class _HomeScreenState extends State<HomeScreen>
         );
       }
     } catch (e) {
-      if (mounted) {
-        _showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
-      }
+      if (mounted) _showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message,
-            style: const TextStyle(color: Colors.white, fontSize: 14)),
+        content: Text(message, style: const TextStyle(color: Colors.white, fontSize: 14)),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -212,181 +364,28 @@ class _HomeScreenState extends State<HomeScreen>
 
   PageRoute _slideRoute(Widget page) {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-          SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(1, 0),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-            child: child,
-          ),
+      pageBuilder: (_, animation, _) => page,
+      transitionsBuilder: (_, animation, _, child) => SlideTransition(
+        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
+            .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+        child: child,
+      ),
       transitionDuration: const Duration(milliseconds: 300),
     );
   }
 
-  static const _navItems = [
-    _NavItem(icon: Icons.home_rounded, label: 'Home'),
-    _NavItem(icon: Icons.dynamic_feed_rounded, label: 'Feed'),
-    _NavItem(icon: Icons.check_circle_outline_rounded, label: 'Tasks'),
-    _NavItem(icon: Icons.auto_awesome_rounded, label: 'AI'),
-    _NavItem(icon: Icons.person_outline_rounded, label: 'Profile'),
-  ];
+  // ─────────────────────────────────────────────
+  // Build
+  // ─────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    final user = AuthController.instance.getCurrentUser();
-    final displayName = user?.displayName ?? 'Flowva User';
-    final initials = displayName.trim().isNotEmpty
-        ? displayName.trim()[0].toUpperCase()
-        : 'F';
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _getGreeting(),
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          displayName,
-                          style: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.4,
-                            fontFamily: 'Inter',
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  _IconButton(
-                    icon: Icons.notifications_none_rounded,
-                    onTap: () {},
-                    hasBadge: true,
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: _handleLogout,
-                    child: Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: AppColors.accent,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.accent.withValues(alpha: 0.25),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        initials,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Search bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _GlassSearchBar(
-                controller: _searchController,
-                onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Section title
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'My Groups',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.3,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                  StreamBuilder<List<GroupModel>>(
-                    stream: GroupController.instance.getUserGroups(),
-                    builder: (ctx, snap) {
-                      final count = snap.data?.length ?? 0;
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '$count',
-                          style: TextStyle(
-                            color: AppColors.accent,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
-            // Body
-            Expanded(
-              child: _buildBody(),
-            ),
-          ],
-        ),
-      ),
-
-      // FAB
-      floatingActionButton: ScaleTransition(
+      body: SafeArea(child: _buildBody()),
+      floatingActionButton: _selectedIndex == 0
+          ? ScaleTransition(
         scale: _fabAnimation,
         child: Container(
           width: 56,
@@ -407,17 +406,26 @@ class _HomeScreenState extends State<HomeScreen>
             icon: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
           ),
         ),
-      ),
+      )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      bottomNavigationBar: _BottomNavDock(
+      bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,
-        items: _navItems,
         onItemSelected: (i) => setState(() => _selectedIndex = i),
       ),
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Feed Group Tile — Feed tab mein group select karne ke liye
+// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Empty Feed State
+// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared Small Widgets
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _GlassSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -437,10 +445,12 @@ class _GlassSearchBar extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontFamily: 'Inter'),
+        style: const TextStyle(
+            color: AppColors.textPrimary, fontSize: 14, fontFamily: 'Inter'),
         decoration: const InputDecoration(
           hintText: 'Search groups…',
-          hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14, fontFamily: 'Inter'),
+          hintStyle: TextStyle(
+              color: AppColors.textMuted, fontSize: 14, fontFamily: 'Inter'),
           prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted, size: 20),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -450,12 +460,12 @@ class _GlassSearchBar extends StatelessWidget {
   }
 }
 
-class _IconButton extends StatelessWidget {
+class _IconBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool hasBadge;
 
-  const _IconButton({required this.icon, required this.onTap, this.hasBadge = false});
+  const _IconBtn({required this.icon, required this.onTap, this.hasBadge = false});
 
   @override
   Widget build(BuildContext context) {
@@ -481,9 +491,7 @@ class _IconButton extends StatelessWidget {
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: AppColors.accent,
-                  shape: BoxShape.circle,
-                ),
+                    color: AppColors.accent, shape: BoxShape.circle),
               ),
             ),
         ],
@@ -491,6 +499,50 @@ class _IconButton extends StatelessWidget {
     );
   }
 }
+
+class _AvatarBtn extends StatelessWidget {
+  final VoidCallback onTap;
+  const _AvatarBtn({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final displayName =
+        AuthController.instance.getCurrentUser()?.displayName ?? 'F';
+    final initial = displayName.trim().isNotEmpty
+        ? displayName.trim()[0].toUpperCase()
+        : 'F';
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: AppColors.accent,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.accent.withValues(alpha: 0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          initial,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Inter',
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LoadingState extends StatelessWidget {
   const _LoadingState();
 
@@ -527,21 +579,19 @@ class _ErrorState extends StatelessWidget {
                   color: AppColors.error, size: 30),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Something went wrong',
-              style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Inter'),
-            ),
+            const Text('Something went wrong',
+                style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter')),
             const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13, fontFamily: 'Inter'),
-            ),
+            Text(message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                    fontFamily: 'Inter')),
           ],
         ),
       ),
@@ -598,26 +648,27 @@ class _EmptyState extends StatelessWidget {
                   : 'Create or join a group to start collaborating.',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13, height: 1.5, fontFamily: 'Inter'),
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                  height: 1.5,
+                  fontFamily: 'Inter'),
             ),
             if (!isSearching) ...[
               const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
-                    child: _EmptyActionButton(
-                      label: 'Create Group',
-                      icon: Icons.add_rounded,
-                      onTap: onCreateTap,
-                    ),
+                    child: _ActionBtn(
+                        label: 'Create Group',
+                        icon: Icons.add_rounded,
+                        onTap: onCreateTap),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _EmptyActionButton(
-                      label: 'Join Group',
-                      icon: Icons.link_rounded,
-                      onTap: onJoinTap,
-                    ),
+                    child: _ActionBtn(
+                        label: 'Join Group',
+                        icon: Icons.link_rounded,
+                        onTap: onJoinTap),
                   ),
                 ],
               ),
@@ -629,16 +680,12 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-class _EmptyActionButton extends StatelessWidget {
+class _ActionBtn extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
 
-  const _EmptyActionButton({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-  });
+  const _ActionBtn({required this.label, required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -656,85 +703,13 @@ class _EmptyActionButton extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.white, size: 18),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-              fontFamily: 'Inter',
-            ),
-          ),
+          Text(label,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  fontFamily: 'Inter')),
         ],
-      ),
-    );
-  }
-}
-
-class _NavItem {
-  final IconData icon;
-  final String label;
-  const _NavItem({required this.icon, required this.label});
-}
-
-class _BottomNavDock extends StatelessWidget {
-  final int selectedIndex;
-  final List<_NavItem> items;
-  final ValueChanged<int> onItemSelected;
-
-  const _BottomNavDock({
-    required this.selectedIndex,
-    required this.items,
-    required this.onItemSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 8, bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 0.5),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (i) {
-          if (i == 2) return const SizedBox(width: 56);
-          final isSelected = selectedIndex == i;
-          return GestureDetector(
-            onTap: () => onItemSelected(i),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.accent.withValues(alpha: 0.12) : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    items[i].icon,
-                    color: isSelected ? AppColors.accent : AppColors.textMuted,
-                    size: 22,
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    items[i].label,
-                    style: TextStyle(
-                      color: isSelected ? AppColors.accent : AppColors.textMuted,
-                      fontSize: 10,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
       ),
     );
   }
@@ -756,9 +731,7 @@ class _AddGroupBottomSheet extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        border: const Border(
-          top: BorderSide(color: AppColors.border, width: 0.5),
-        ),
+        border: const Border(top: BorderSide(color: AppColors.border, width: 0.5)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -772,22 +745,17 @@ class _AddGroupBottomSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
           ),
-          const Text(
-            'Add a Group',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Inter',
-            ),
-          ),
+          const Text('Add a Group',
+              style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter')),
           const SizedBox(height: 6),
-          const Text(
-            'Start a new workspace or hop into one',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 13, fontFamily: 'Inter'),
-          ),
+          const Text('Start a new workspace or hop into one',
+              style: TextStyle(
+                  color: AppColors.textSecondary, fontSize: 13, fontFamily: 'Inter')),
           const SizedBox(height: 24),
-
           _SheetOption(
             icon: Icons.add_circle_outline_rounded,
             title: 'Create Group',
@@ -795,7 +763,6 @@ class _AddGroupBottomSheet extends StatelessWidget {
             onTap: onCreateGroup,
           ),
           const SizedBox(height: 12),
-
           _SheetOption(
             icon: Icons.link_rounded,
             title: 'Join Group',
@@ -848,21 +815,18 @@ class _SheetOption extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
+                  Text(title,
+                      style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Inter')),
                   const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                        color: AppColors.textSecondary, fontSize: 12, fontFamily: 'Inter'),
-                  ),
+                  Text(subtitle,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                          fontFamily: 'Inter')),
                 ],
               ),
             ),
@@ -870,6 +834,305 @@ class _SheetOption extends StatelessWidget {
                 color: AppColors.textMuted, size: 20),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// My Tasks Feed — Feed tab mein mujhe assign tasks
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _MyTasksFeed extends StatelessWidget {
+  const _MyTasksFeed();
+
+  Color _priorityColor(String p) {
+    if (p == 'high') return AppColors.error;
+    if (p == 'low') return AppColors.success;
+    return AppColors.warning;
+  }
+
+  String _priorityLabel(String p) {
+    if (p == 'high') return 'High';
+    if (p == 'low') return 'Low';
+    return 'Medium';
+  }
+
+  String _formatDate(dynamic val) {
+    DateTime? d;
+    if (val is Timestamp) d = val.toDate();
+    if (val is DateTime) d = val;
+    if (d == null) return '';
+    final now = DateTime.now();
+    final diff = d.difference(now);
+    if (d.day == now.day && d.month == now.month) return 'Today';
+    if (diff.inDays == 1) return 'Tomorrow';
+    if (diff.inDays < 0) return 'Overdue';
+    return '${d.day}/${d.month}';
+  }
+
+  Color _dateColor(dynamic val) {
+    DateTime? d;
+    if (val is Timestamp) d = val.toDate();
+    if (val is DateTime) d = val;
+    if (d == null) return AppColors.textMuted;
+    final diff = d.difference(DateTime.now());
+    if (diff.inDays < 0) return AppColors.error;   // overdue
+    if (diff.inDays == 0) return AppColors.warning; // today
+    return AppColors.textMuted;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: TaskController.instance.getMyTasks(),
+      builder: (context, snapshot) {
+        // Loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: 3,
+            itemBuilder: (_, i) => const SkeletonPostCard(),
+          );
+        }
+
+        // Error
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              snapshot.error.toString().replaceAll('Exception: ', ''),
+              style: const TextStyle(color: AppColors.error),
+            ),
+          );
+        }
+
+        final tasks = snapshot.data ?? [];
+
+        // Empty
+        if (tasks.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.task_alt_rounded,
+                      color: AppColors.accent, size: 32),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'No tasks assigned',
+                  style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter'),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Tasks assigned to you will appear here',
+                  style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                      fontFamily: 'Inter'),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Filter — pending tasks pehle, done baad mein
+        final pending = tasks.where((t) => t['status'] != 'done').toList();
+        final done = tasks.where((t) => t['status'] == 'done').toList();
+        final sorted = [...pending, ...done];
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+          itemCount: sorted.length,
+          itemBuilder: (ctx, i) => _MyTaskCard(
+            task: sorted[i],
+            priorityColor: _priorityColor,
+            priorityLabel: _priorityLabel,
+            formatDate: _formatDate,
+            dateColor: _dateColor,
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// My Task Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _MyTaskCard extends StatelessWidget {
+  final Map<String, dynamic> task;
+  final Color Function(String) priorityColor;
+  final String Function(String) priorityLabel;
+  final String Function(dynamic) formatDate;
+  final Color Function(dynamic) dateColor;
+
+  const _MyTaskCard({
+    required this.task,
+    required this.priorityColor,
+    required this.priorityLabel,
+    required this.formatDate,
+    required this.dateColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final String title = task['title']?.toString() ?? 'Untitled';
+    final String priority = task['priority']?.toString() ?? 'medium';
+    final String status = task['status']?.toString() ?? 'todo';
+    final String assigner = task['assignedByName']?.toString() ?? 'Someone';
+    final bool isDone = status == 'done';
+    final Color pColor = priorityColor(priority);
+    final String due = formatDate(task['dueDate']);
+    final Color dColor = dateColor(task['dueDate']);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDone
+            ? AppColors.card.withValues(alpha: 0.5)
+            : AppColors.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDone ? AppColors.border.withValues(alpha: 0.5) : AppColors.border,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Priority icon
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: isDone
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : pColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              isDone ? Icons.check_circle_rounded : Icons.flag_rounded,
+              color: isDone ? AppColors.success : pColor,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+
+          // Task info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Assigned by
+                Text(
+                  'Assigned by $assigner',
+                  style: const TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 11,
+                      fontFamily: 'Inter'),
+                ),
+                const SizedBox(height: 4),
+
+                // Title
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isDone
+                        ? AppColors.textMuted
+                        : AppColors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Inter',
+                    decoration: isDone ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Priority + Due date + Status
+                Row(
+                  children: [
+                    // Priority badge
+                    if (!isDone)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: pColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          priorityLabel(priority),
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: pColor,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Inter'),
+                        ),
+                      ),
+
+                    if (!isDone && due.isNotEmpty) const SizedBox(width: 8),
+
+                    // Due date
+                    if (due.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today_rounded,
+                              size: 10, color: dColor),
+                          const SizedBox(width: 3),
+                          Text(
+                            due,
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: dColor,
+                                fontWeight: due == 'Overdue'
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                fontFamily: 'Inter'),
+                          ),
+                        ],
+                      ),
+
+                    const Spacer(),
+
+                    // Done badge
+                    if (isDone)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Text(
+                          'Done ✓',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.success,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Inter'),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

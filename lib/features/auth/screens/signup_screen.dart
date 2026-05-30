@@ -4,7 +4,8 @@ import '../controllers/auth_controller.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/auth_button.dart';
 import 'login_screen.dart';
-import '../../groups/screens/home_screen.dart';
+import '../../profile/screens/complete_profile_screen.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -32,21 +33,23 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void _handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       await AuthController.instance.signup(
-        fullName: _nameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
+        fullName: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
       if (mounted) {
+        // Signup ke baad → Complete Profile screen
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(
+            builder: (_) => CompleteProfileScreen(
+              name: _nameController.text.trim(),
+            ),
+          ),
               (route) => false,
         );
       }
@@ -60,20 +63,14 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             margin: const EdgeInsets.all(16),
             duration: const Duration(seconds: 4),
           ),
         );
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -91,7 +88,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo banner
+                  // Logo
                   Center(
                     child: Container(
                       width: 70,
@@ -145,32 +142,24 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 36),
 
-                  // Full Name
                   AuthTextField(
                     controller: _nameController,
                     hintText: 'Full Name',
                     prefixIcon: Icons.person_outline,
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your full name.';
-                      }
-                      if (value.trim().length < 2) {
-                        return 'Name must be at least 2 characters.';
-                      }
+                      if (value == null || value.trim().isEmpty) return 'Please enter your full name.';
+                      if (value.trim().length < 2) return 'Name must be at least 2 characters.';
                       return null;
                     },
                   ),
 
-                  // Email Address
                   AuthTextField(
                     controller: _emailController,
                     hintText: 'Email Address',
                     prefixIcon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your email.';
-                      }
+                      if (value == null || value.trim().isEmpty) return 'Please enter your email.';
                       if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
                         return 'Please enter a valid email address.';
                       }
@@ -178,42 +167,31 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   ),
 
-                  // Password
                   AuthTextField(
                     controller: _passwordController,
                     hintText: 'Password',
                     prefixIcon: Icons.lock_outlined,
                     isPassword: true,
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a password.';
-                      }
-                      if (value.trim().length < 6) {
-                        return 'Password must be at least 6 characters.';
-                      }
+                      if (value == null || value.trim().isEmpty) return 'Please enter a password.';
+                      if (value.trim().length < 6) return 'Password must be at least 6 characters.';
                       return null;
                     },
                   ),
 
-                  // Confirm Password
                   AuthTextField(
                     controller: _confirmPasswordController,
                     hintText: 'Confirm Password',
                     prefixIcon: Icons.lock_reset_outlined,
                     isPassword: true,
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please confirm your password.';
-                      }
-                      if (value.trim() != _passwordController.text.trim()) {
-                        return 'Passwords do not match.';
-                      }
+                      if (value == null || value.trim().isEmpty) return 'Please confirm your password.';
+                      if (value.trim() != _passwordController.text.trim()) return 'Passwords do not match.';
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
 
-                  // Register Button
                   AuthButton(
                     text: 'Sign Up',
                     onPressed: _handleSignup,
@@ -221,7 +199,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Footer Switch Route
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -234,13 +211,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                          );
-                        },
+                        onTap: () => Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        ),
                         child: const Text(
                           'Login',
                           style: TextStyle(
