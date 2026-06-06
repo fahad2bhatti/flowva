@@ -9,7 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="" />
+    <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -139,7 +141,7 @@
                 <list>
                   <RecentBranch>
                     <option name="branchName" value="main" />
-                    <option name="lastUsedInstant" value="1779483170" />
+                    <option name="lastUsedInstant" value="1780775306" />
                   </RecentBranch>
                   <RecentBranch>
                     <option name="branchName" value="fahad/dev" />
@@ -210,7 +212,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "fahad/dev",
+    "git-widget-placeholder": "main",
     "io.flutter.project.isFirstOpen": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/flowva",
