@@ -148,3 +148,4 @@ class ProfileController {
     return query.docs.first.id == uid;
   }
 }
+

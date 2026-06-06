@@ -213,3 +213,4 @@ class GroupController {
     await _firestore.collection('groups').doc(groupId).delete();
   }
 }
+

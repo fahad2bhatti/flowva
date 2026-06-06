@@ -370,7 +370,7 @@ class _Chip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.accent.withValues(alpha: 0.15)
+              ? AppColors.accent.withValues(alpha:  0.15)
               : AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -388,3 +388,4 @@ class _Chip extends StatelessWidget {
     );
   }
 }
+

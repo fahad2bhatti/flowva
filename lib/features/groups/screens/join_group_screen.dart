@@ -297,3 +297,4 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
     );
   }
 }
+

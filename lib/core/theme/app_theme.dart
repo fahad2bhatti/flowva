@@ -8,3 +8,4 @@ class AppTheme {
   static ThemeData get lightTheme => lt.lightTheme;
   static ThemeData get darkTheme => dt.buildDarkTheme();
 }
+

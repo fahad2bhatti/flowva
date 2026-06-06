@@ -10,13 +10,11 @@ final ThemeData lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     primary: AppColors.accent,
     secondary: AppColors.accent,
-    surface: Colors.white,
-    background: Color(0xFFF6F8FA),
+    surface: Color(0xFFF6F8FA),
     error: AppColors.error,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Color(0xFF1F2937),
-    onBackground: Color(0xFF1F2937),
   ),
 
   appBarTheme: const AppBarTheme(
@@ -116,3 +114,4 @@ final ThemeData lightTheme = ThemeData(
     elevation: 0,
   ),
 );
+

@@ -1,3 +1,4 @@
+import 'package:flowva/features/chat/screens/chat_screens.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/skeleton_widgets.dart';
@@ -13,6 +14,7 @@ import '../../tasks/controllers/task_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flowva/shared/widgets/bottom_nav_bar.dart';
 import '../../profile/screens/profile_screen.dart';
+import 'package:flowva/features/ai/screens/ai_assistant_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,7 +61,27 @@ class _HomeScreenState extends State<HomeScreen>
       case 0: return _buildHomeTab();
       case 1: return _buildFeedTab();
       case 2: return _buildComingSoon('Tasks', Icons.check_circle_outline_rounded);
-      case 3: return _buildComingSoon('AI Assistant', Icons.auto_awesome_rounded);
+      case 3:
+        return StreamBuilder<List<GroupModel>>(
+          stream: GroupController.instance.getUserGroups(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.accent),
+              );
+            }
+            final groups = snapshot.data ?? [];
+            if (groups.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Join a group to use AI Assistant',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              );
+            }
+            return AIAssistantScreen(group: groups.first);
+          },
+        );
       case 4:
         return const ProfileScreen();
       default: return _buildHomeTab();
@@ -108,6 +130,8 @@ class _HomeScreenState extends State<HomeScreen>
                   ],
                 ),
               ),
+              _IconBtn(icon: Icons.chat_bubble_outline_rounded, onTap: _openChat, hasBadge: false),
+              const SizedBox(width: 10),
               _IconBtn(icon: Icons.notifications_none_rounded, onTap: () {}, hasBadge: true),
               const SizedBox(width: 10),
               _AvatarBtn(onTap: _handleLogout),
@@ -231,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen>
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.accent.withValues(alpha: 0.1),
+              color: AppColors.accent.withValues(alpha:  0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: AppColors.accent, size: 36),
@@ -336,6 +360,12 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  void _openChat() {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (_) => const ChatScreen(groupId: 'general', channelName: 'general'),
+    ));
+  }
+
   void _handleLogout() async {
     try {
       await AuthController.instance.logout();
@@ -395,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: AppColors.accent.withValues(alpha: 0.3),
+                color: AppColors.accent.withValues(alpha:  0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -522,7 +552,7 @@ class _AvatarBtn extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppColors.accent.withValues(alpha: 0.25),
+              color: AppColors.accent.withValues(alpha:  0.25),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -572,7 +602,7 @@ class _ErrorState extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
+                color: AppColors.error.withValues(alpha:  0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.error_outline_rounded,
@@ -622,7 +652,7 @@ class _EmptyState extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.1),
+                color: AppColors.accent.withValues(alpha:  0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -741,7 +771,7 @@ class _AddGroupBottomSheet extends StatelessWidget {
             height: 4,
             margin: const EdgeInsets.only(bottom: 20),
             decoration: BoxDecoration(
-              color: AppColors.textMuted.withValues(alpha: 0.4),
+              color: AppColors.textMuted.withValues(alpha:  0.4),
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -805,7 +835,7 @@ class _SheetOption extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.1),
+                color: AppColors.accent.withValues(alpha:  0.1),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, color: AppColors.accent, size: 24),
@@ -918,7 +948,7 @@ class _MyTasksFeed extends StatelessWidget {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.1),
+                    color: AppColors.accent.withValues(alpha:  0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.task_alt_rounded,
@@ -1003,11 +1033,11 @@ class _MyTaskCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDone
-            ? AppColors.card.withValues(alpha: 0.5)
+            ? AppColors.card.withValues(alpha:  0.5)
             : AppColors.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDone ? AppColors.border.withValues(alpha: 0.5) : AppColors.border,
+          color: isDone ? AppColors.border.withValues(alpha:  0.5) : AppColors.border,
         ),
       ),
       child: Row(
@@ -1019,8 +1049,8 @@ class _MyTaskCard extends StatelessWidget {
             height: 42,
             decoration: BoxDecoration(
               color: isDone
-                  ? AppColors.success.withValues(alpha: 0.1)
-                  : pColor.withValues(alpha: 0.12),
+                  ? AppColors.success.withValues(alpha:  0.1)
+                  : pColor.withValues(alpha:  0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -1072,7 +1102,7 @@ class _MyTaskCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: pColor.withValues(alpha: 0.15),
+                          color: pColor.withValues(alpha:  0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -1115,7 +1145,7 @@ class _MyTaskCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.15),
+                          color: AppColors.success.withValues(alpha:  0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(
@@ -1137,3 +1167,4 @@ class _MyTaskCard extends StatelessWidget {
     );
   }
 }
+

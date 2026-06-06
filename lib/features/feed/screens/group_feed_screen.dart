@@ -128,7 +128,7 @@ class _GroupFeedScreenState extends State<GroupFeedScreen> {
     try {
       await FeedController.instance.createPost(widget.group.id, content);
       _postController.clear();
-      if (mounted) Navigator.pop(sheetCtx);
+      if (context.mounted) Navigator.pop(sheetCtx);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -1104,3 +1104,4 @@ class _FeedTaskCard extends StatelessWidget {
     );
   }
 }
+

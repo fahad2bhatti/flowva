@@ -20,3 +20,4 @@ class AppStrings {
   static const String sendResetEmail = 'Send Reset Email';
   static const String signOut = 'Sign Out';
 }
+

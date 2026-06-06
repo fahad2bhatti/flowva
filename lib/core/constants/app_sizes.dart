@@ -27,3 +27,4 @@ class AppSizes {
   static const double fontHeading = 32.0;
   static const double fontHero = 48.0;
 }
+

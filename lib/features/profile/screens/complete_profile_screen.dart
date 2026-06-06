@@ -444,11 +444,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                AppColors.accent.withValues(alpha: 0.12),
+                AppColors.accent.withValues(alpha:  0.12),
                 AppColors.surface,
               ]),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+              border: Border.all(color: AppColors.accent.withValues(alpha:  0.2)),
             ),
             child: Row(
               children: [
@@ -456,7 +456,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.15),
+                    color: AppColors.accent.withValues(alpha:  0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Center(child: Text('🏆', style: TextStyle(fontSize: 20))),
@@ -538,7 +538,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.accent.withValues(alpha: 0.3),
+                      color: AppColors.accent.withValues(alpha:  0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -749,7 +749,7 @@ class _SelectChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.accent.withValues(alpha: 0.15)
+              ? AppColors.accent.withValues(alpha:  0.15)
               : AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -770,3 +770,4 @@ class _SelectChip extends StatelessWidget {
     );
   }
 }
+

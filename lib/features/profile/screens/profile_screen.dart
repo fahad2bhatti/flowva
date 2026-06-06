@@ -147,7 +147,7 @@ class _CoverSection extends StatelessWidget {
           height: 140,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.accent.withValues(alpha: 0.2),
+            color: AppColors.accent.withValues(alpha:  0.2),
             image: user.hasCover
                 ? DecorationImage(
               image: NetworkImage(user.coverPhotoUrl),
@@ -160,8 +160,8 @@ class _CoverSection extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.accent.withValues(alpha: 0.4),
-                  AppColors.accent.withValues(alpha: 0.1),
+                  AppColors.accent.withValues(alpha:  0.4),
+                  AppColors.accent.withValues(alpha:  0.1),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -182,7 +182,7 @@ class _CoverSection extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
+                  color: Colors.black.withValues(alpha:  0.3),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.arrow_back_rounded,
@@ -206,7 +206,7 @@ class _CoverSection extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
+                    color: Colors.black.withValues(alpha:  0.3),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(
@@ -353,9 +353,9 @@ class _InfoSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.1),
+                    color: AppColors.accent.withValues(alpha:  0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+                    border: Border.all(color: AppColors.accent.withValues(alpha:  0.3)),
                   ),
                   child: const Row(
                     children: [
@@ -665,11 +665,11 @@ class _StatusCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
-            AppColors.accent.withValues(alpha: 0.1),
+            AppColors.accent.withValues(alpha:  0.1),
             AppColors.surface,
           ]),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+          border: Border.all(color: AppColors.accent.withValues(alpha:  0.2)),
         ),
         child: Row(
           children: [
@@ -953,12 +953,12 @@ class _Tag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: isInterest
-            ? AppColors.accent.withValues(alpha: 0.08)
+            ? AppColors.accent.withValues(alpha:  0.08)
             : AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isInterest
-              ? AppColors.accent.withValues(alpha: 0.3)
+              ? AppColors.accent.withValues(alpha:  0.3)
               : AppColors.border,
         ),
       ),
@@ -993,7 +993,7 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: filled ? AppColors.accent : Colors.black.withValues(alpha: 0.3),
+          color: filled ? AppColors.accent : Colors.black.withValues(alpha:  0.3),
           borderRadius: BorderRadius.circular(20),
           border: filled ? null : Border.all(color: Colors.white38),
         ),
@@ -1013,3 +1013,4 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
+

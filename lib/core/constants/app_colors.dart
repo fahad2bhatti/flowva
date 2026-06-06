@@ -30,3 +30,4 @@ class AppColors {
   static const Color accentElectricBlue = accent;
   static const Color secondaryAccent = accent;
 }
+

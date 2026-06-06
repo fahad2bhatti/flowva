@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen>
           // Outer pulse ring
           AnimatedBuilder(
             animation: _pulseAnim,
-            builder: (_, __) => Transform.scale(
+            builder: (_, _) => Transform.scale(
               scale: _pulseAnim.value,
               child: Container(
                 width: 220,
@@ -187,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen>
           // Middle ring
           AnimatedBuilder(
             animation: _pulseAnim,
-            builder: (_, __) => Transform.scale(
+            builder: (_, _) => Transform.scale(
               scale: 1 / _pulseAnim.value,
               child: Container(
                 width: 180,
@@ -601,3 +601,4 @@ class _FlowIconPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

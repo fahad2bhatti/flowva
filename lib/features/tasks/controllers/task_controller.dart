@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../data/models/task_model.dart';
 
 class TaskController {
   static final TaskController _instance = TaskController._internal();
@@ -84,7 +85,7 @@ class TaskController {
   }
 
   // ─────────────────────────────────────────────
-  // Get Tasks for a Group
+  // Get Tasks for a Group (Stream)
   // ─────────────────────────────────────────────
 
   Stream<List<Map<String, dynamic>>> getGroupTasks(String groupId) {
@@ -101,6 +102,20 @@ class TaskController {
         };
       }).toList();
     });
+  }
+
+  // ─────────────────────────────────────────────
+  // 🆕 Get Tasks for a Group as List (Not Stream) — Gemini ke liye
+  // ─────────────────────────────────────────────
+
+  Future<List<TaskModel>> getGroupTasksList(String groupId) async {
+    final snapshot = await _firestore
+        .collection('tasks')
+        .where('groupId', isEqualTo: groupId)
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs.map((doc) => TaskModel.fromMap(doc.data(), doc.id)).toList();
   }
 
   // ─────────────────────────────────────────────
@@ -229,3 +244,4 @@ class TaskController {
     });
   }
 }
+

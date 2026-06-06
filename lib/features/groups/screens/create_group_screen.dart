@@ -123,7 +123,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                             BoxShadow(
                               color: (_colorOptions.firstWhere(
                                     (c) => c['hex'] == _selectedColor,
-                              )['color'] as Color).withValues(alpha: 0.3),
+                              )['color'] as Color).withValues(alpha:  0.3),
                               blurRadius: 16,
                               spreadRadius: 2,
                             ),
@@ -271,7 +271,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                   ? [
                                 BoxShadow(
                                   color: (option['color'] as Color)
-                                      .withValues(alpha: 0.4),
+                                      .withValues(alpha:  0.4),
                                   blurRadius: 10,
                                   spreadRadius: 1,
                                 ),
@@ -293,10 +293,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.error.withValues(alpha: 0.1),
+                          color: AppColors.error.withValues(alpha:  0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: AppColors.error.withValues(alpha: 0.3),
+                            color: AppColors.error.withValues(alpha:  0.3),
                           ),
                         ),
                         child: Row(
@@ -372,3 +372,4 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     );
   }
 }
+

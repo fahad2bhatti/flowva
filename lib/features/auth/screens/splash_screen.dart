@@ -111,13 +111,13 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Container(
                         width: 120,
                         height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.08),
-                            width: 1,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.accent.withValues(alpha: 0.08),
+                              width: 1,
+                            ),
                           ),
-                        ),
                         child: Center(
                           child: AnimatedScale(
                             scale: _logoScale,
@@ -225,3 +225,4 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
+
