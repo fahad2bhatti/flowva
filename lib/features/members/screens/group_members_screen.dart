@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class GroupMembersScreen extends StatelessWidget {
+  final String groupId;
+  const GroupMembersScreen({super.key, required this.groupId});
   @override
   Widget build(BuildContext context) {
     return const Scaffold(

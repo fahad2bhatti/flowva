@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../controllers/auth_controller.dart';
 import '../../../../core/constants/app_colors.dart';
 
@@ -102,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen>
         password: _passwordController.text.trim(),
       );
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
+        context.go('/home');
       }
     } catch (e) {
       setState(() {
@@ -316,7 +317,7 @@ class _LoginScreenState extends State<LoginScreen>
             Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/forgot-password'),
+                onTap: () => context.go('/auth/forgot-password'),
                 child: const Text(
                   'Forgot password?',
                   style: TextStyle(
@@ -513,21 +514,21 @@ class _LoginScreenState extends State<LoginScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
-          "Don't have an account? ",
-          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-        ),
-        GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/signup'),
-          child: const Text(
-            'Sign up',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: AppColors.accent,
-            ),
-          ),
-        ),
+         const Text(
+           "Don't have an account? ",
+           style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+         ),
+         GestureDetector(
+           onTap: () => context.push('/auth/signup'),
+           child: const Text(
+             'Sign up',
+             style: TextStyle(
+               fontSize: 14,
+               fontWeight: FontWeight.w700,
+               color: AppColors.accent,
+             ),
+           ),
+         ),
       ],
     );
   }

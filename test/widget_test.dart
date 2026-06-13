@@ -8,12 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flowva/main.dart';
+import 'package:flowva/app/app.dart';
 
 void main() {
   testWidgets('App loads smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const FlowvaApp());
 
     // Verify that a CircularProgressIndicator or loading structure exists.
     expect(find.byType(CircularProgressIndicator), findsOneWidget);

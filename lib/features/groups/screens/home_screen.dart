@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen>
             group: filtered[i],
             onTap: () => Navigator.push(
               context,
-              _slideRoute(GroupFeedScreen(group: filtered[i])),
+              _slideRoute(GroupFeedScreen(group: filtered[i], groupId: '',)),
             ),
           ),
         );

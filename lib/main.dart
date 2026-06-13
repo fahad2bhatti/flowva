@@ -1,85 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
-import 'package:flowva/core/theme/theme_provider.dart';
-import 'package:flowva/core/constants/app_colors.dart';
-import 'package:flowva/core/theme/app_theme.dart';
-import 'package:flowva/features/auth/controllers/auth_controller.dart';
-import 'package:flowva/features/auth/screens/splash_screen.dart';
-import 'package:flowva/features/auth/screens/login_screen.dart';
-import 'package:flowva/features/auth/screens/signup_screen.dart';
-import 'package:flowva/features/auth/screens/forgot_password_screen.dart';
-import 'package:flowva/features/groups/screens/home_screen.dart';
+import 'package:flowva/app/app.dart';
+import 'package:flowva/firebase_options.dart';
+import 'package:flowva/data/services/firebase_service.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 🔥 .env file load karo (API key ke liye)
-  await dotenv.load(fileName: ".env");
-
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint("Firebase Initialization Info: $e");
-  }
-
-  runApp(const MyApp());
+  await dotenv.load(fileName: '.env');
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // ← zaroori
+  );
+  FirebaseService.enableOfflinePersistence(); // ← offline support
+  runApp(const FlowvaApp());
 }
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
-          return MaterialApp(
-            title: 'Flowva',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeProvider.themeMode,
-
-            routes: {
-              '/login': (context) => const LoginScreen(),
-              '/signup': (context) => const SignupScreen(),
-              '/forgot-password': (context) => const ForgotPasswordScreen(),
-              '/home': (context) => const HomeScreen(),
-            },
-            home: StreamBuilder<User?>(
-              stream: AuthController.instance.authStateChanges,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  final User? user = snapshot.data;
-                  if (user != null) {
-                    return const HomeScreen();
-                  } else {
-                    return const SplashScreen();
-                  }
-                }
-                return const Scaffold(
-                  backgroundColor: AppColors.primaryBackground,
-                  body: Center(
-                    child: SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
