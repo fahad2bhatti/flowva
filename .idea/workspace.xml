@@ -11,11 +11,13 @@
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/auth_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/auth_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/group_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/group_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/notification_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/notification_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/post_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/post_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/task_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/task_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/components/app_bar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/components/app_bar.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/components/empty_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/components/empty_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/widgets/avatar_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/widgets/avatar_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/widgets/custom_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/widgets/custom_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/widgets/custom_text_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/widgets/custom_text_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/widgets/error_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/widgets/error_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/widgets/loading_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/widgets/loading_widget.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
