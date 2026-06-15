@@ -10,14 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/notification_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/notification_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/chat/screens/chat_screens.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/chat/screens/chat_screens.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/members/screens/members_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/members/screens/members_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/members/widgets/member_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/members/widgets/member_tile.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/notifications/screens/notifications_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/notifications/screens/notifications_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/notifications/widgets/notification_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/notifications/widgets/notification_tile.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/features/chat/screens/dm_screen.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
