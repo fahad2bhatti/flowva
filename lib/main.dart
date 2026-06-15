@@ -9,7 +9,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // ← zaroori
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseService.enableOfflinePersistence(); // ← offline support
   runApp(const FlowvaApp());
