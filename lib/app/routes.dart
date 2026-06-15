@@ -182,7 +182,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/dashboard',
-      pageBuilder: (context, state) => _slideTransition(context, state, const DashboardScreen()),
+      pageBuilder: (context, state) => _slideTransition(context, state, const DashboardScreen(groupId: '',)),
     ),
   ],
   errorBuilder: (context, state) => const NotFoundScreen(),

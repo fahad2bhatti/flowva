@@ -33,6 +33,7 @@ dependencies:
   go_router: ^14.2.1
   url_launcher: ^6.3.0
   path: ^1.9.0
+  fl_chart: ^0.69.0
 
 dev_dependencies:
   flutter_test:
