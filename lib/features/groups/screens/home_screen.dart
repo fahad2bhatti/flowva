@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen>
             group: filtered[i],
             onTap: () => Navigator.push(
               context,
-              _slideRoute(GroupFeedScreen(group: filtered[i], groupId: '',)),
+              _slideRoute(GroupFeedScreen(group: filtered[i])),
             ),
           ),
         );
@@ -361,9 +361,21 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _openChat() {
-    Navigator.push(context, MaterialPageRoute(
-      builder: (_) => const ChatScreen(groupId: 'general', channelName: 'general'),
-    ));
+    // Show group picker — user ko pehle group select karna hoga
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => _GroupChatPickerSheet(
+        onGroupSelected: (groupId, groupName) {
+          Navigator.pop(ctx);
+          Navigator.push(
+            context,
+            _slideRoute(ChatScreen(groupId: groupId, channelName: 'general')),
+          );
+        },
+      ),
+    );
   }
 
   void _handleLogout() async {
@@ -1168,3 +1180,155 @@ class _MyTaskCard extends StatelessWidget {
   }
 }
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Group Chat Picker Sheet — Chat icon tap karne par group select karo
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _GroupChatPickerSheet extends StatelessWidget {
+  final void Function(String groupId, String groupName) onGroupSelected;
+
+  const _GroupChatPickerSheet({required this.onGroupSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: const Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              color: AppColors.textMuted.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const Text(
+            'Open Group Chat',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Inter',
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Select a group to open its chat',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+              fontFamily: 'Inter',
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Groups list
+          StreamBuilder<List<GroupModel>>(
+            stream: GroupController.instance.getUserGroups(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: CircularProgressIndicator(color: AppColors.accent),
+                );
+              }
+
+              final groups = snapshot.data ?? [];
+
+              if (groups.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    'No groups joined yet',
+                    style: TextStyle(color: AppColors.textSecondary, fontFamily: 'Inter'),
+                  ),
+                );
+              }
+
+              return ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: groups.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (ctx, i) {
+                  final group = groups[i];
+                  return GestureDetector(
+                    onTap: () => onGroupSelected(group.id, group.name),
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.border, width: 0.5),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: AppColors.accent.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              group.name.isNotEmpty ? group.name[0].toUpperCase() : 'G',
+                              style: const TextStyle(
+                                color: AppColors.accent,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  group.name,
+                                  style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '# general',
+                                  style: const TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 12,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right_rounded,
+                              color: AppColors.textMuted, size: 20),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

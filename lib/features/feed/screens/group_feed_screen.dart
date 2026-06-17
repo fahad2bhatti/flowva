@@ -12,7 +12,7 @@ import 'package:flowva/shared/widgets/skeleton_widgets.dart';
 
 class GroupFeedScreen extends StatefulWidget {
   final GroupModel group;
-  const GroupFeedScreen({super.key, required this.group, required groupId});
+  const GroupFeedScreen({super.key, required this.group});
 
   @override
   State<GroupFeedScreen> createState() => _GroupFeedScreenState();
@@ -1104,4 +1104,3 @@ class _FeedTaskCard extends StatelessWidget {
     );
   }
 }
-
