@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flowva/core/constants/app_colors.dart';
 import 'package:flowva/features/tasks/controllers/task_controller.dart';
 import 'package:flowva/features/tasks/widgets/priority_badge.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String? taskId;
+  // ✅ FIX: groupId add kiya — TaskController ab groupId bhi maangta hai
+  final String? groupId;
 
-  const TaskDetailScreen({super.key, this.taskId});
+  const TaskDetailScreen({
+    super.key,
+    this.taskId,
+    this.groupId, // ✅ added
+  });
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -27,19 +34,21 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.taskId != null) {
+    if (widget.taskId != null && widget.groupId != null) {
       _loadTask();
     } else {
-      // Demo task - assignedTo/assignedBy as UID strings (matching Firestore)
+      // Demo task
       _task = {
-        'title': 'Fix login API integration',
+        'title'      : 'Fix login API integration',
         'description': 'The login endpoint is returning 500 error.',
-        'priority': 'high',
-        'status': 'in_progress',
-        'dueDate': DateTime.now().add(const Duration(days: 1)),
-        'assignedTo': 'demoUserId123',
-        'assignedBy': 'demoUserId456',
-        'createdAt': DateTime.now(),
+        'priority'   : 'high',
+        'status'     : 'in_progress',
+        'dueDate'    : DateTime.now().add(const Duration(days: 1)),
+        'assignedTo'     : 'demoUserId123',
+        'assignedToName' : 'Demo User',
+        'assignedBy'     : 'demoUserId456',
+        'assignedByName' : 'Admin',
+        'createdAt'  : DateTime.now(),
       };
       setState(() => _isLoading = false);
     }
@@ -49,7 +58,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   // Helpers
   // ─────────────────────────────────────────────
 
-  /// Safely parse Firestore Timestamp or DateTime
   DateTime? _parseDate(dynamic value) {
     if (value == null) return null;
     if (value is DateTime) return value;
@@ -63,27 +71,28 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  /// Firestore mein assignedTo/assignedBy sirf UID String hai
-  /// Agar future mein Map bana do toh bhi handle ho jayega
-  String _extractName(dynamic value, String fallback) {
-    if (value == null) return fallback;
-    if (value is Map) return value['name']?.toString() ?? fallback;
-    // It's a UID string — show shortened UID or fallback
-    return fallback;
+  // ✅ FIX: assignedToName / assignedByName ab directly task mein saved hain
+  // (TaskController denormalize karta hai) — simple string read
+  String _extractName(dynamic uid, String fallbackKey) {
+    // Check denormalized name field pehle
+    final name = _task?[fallbackKey]?.toString();
+    if (name != null && name.isNotEmpty) return name;
+    // Agar Map ho (purana format)
+    if (uid is Map) return uid['name']?.toString() ?? 'Unknown';
+    return 'Unknown';
   }
 
   String _extractEmail(dynamic value) {
-    if (value == null) return '';
     if (value is Map) return value['email']?.toString() ?? '';
     return '';
   }
 
   String _getStatusText(String status) {
     switch (status) {
-      case 'todo': return 'To Do';
+      case 'todo'       : return 'To Do';
       case 'in_progress': return 'In Progress';
-      case 'done': return 'Done';
-      default: return status;
+      case 'done'       : return 'Done';
+      default           : return status;
     }
   }
 
@@ -93,27 +102,36 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Future<void> _loadTask() async {
     try {
-      final task = await TaskController.instance.getTask(widget.taskId!);
+      // ✅ FIX: groupId pass kiya — was missing before
+      final task = await TaskController.instance.getTask(
+        widget.groupId!,
+        widget.taskId!,
+      );
       setState(() {
-        _task = task;
+        _task     = task;
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _error = e.toString().replaceAll('Exception: ', '');
+        _error     = e.toString().replaceAll('Exception: ', '');
         _isLoading = false;
       });
     }
   }
 
   Future<void> _updateStatus(String newStatus) async {
-    if (widget.taskId == null) return;
+    if (widget.taskId == null || widget.groupId == null) return;
     setState(() => _isLoading = true);
     try {
-      await TaskController.instance.updateTaskStatus(widget.taskId!, newStatus);
+      // ✅ FIX: groupId + taskId + status — was missing groupId before
+      await TaskController.instance.updateTaskStatus(
+        widget.groupId!,
+        widget.taskId!,
+        newStatus,
+      );
       setState(() {
         _task?['status'] = newStatus;
-        _isLoading = false;
+        _isLoading       = false;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -146,7 +164,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: CircularProgressIndicator(color: AppColors.accent)),
+        body: Center(
+            child: CircularProgressIndicator(color: AppColors.accent)),
       );
     }
 
@@ -158,8 +177,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           backgroundColor: AppColors.background,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textSecondary),
-            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_rounded,
+                color: AppColors.textSecondary),
+            onPressed: () => context.canPop() ? context.pop() : null,
           ),
         ),
         body: Center(
@@ -168,7 +188,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             children: [
               const Icon(Icons.error_outline, color: AppColors.error, size: 48),
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: AppColors.error)),
+              Text(_error!,
+                  style: const TextStyle(color: AppColors.error)),
             ],
           ),
         ),
@@ -189,8 +210,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textSecondary),
-          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_rounded,
+              color: AppColors.textSecondary),
+          onPressed: () => context.canPop() ? context.pop() : null,
         ),
       ),
       body: SingleChildScrollView(
@@ -235,7 +257,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           return Expanded(
             child: GestureDetector(
               onTap: () => _updateStatus(status),
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.accent : Colors.transparent,
@@ -245,8 +268,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   _getStatusText(status),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textSecondary,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: isSelected
+                        ? Colors.white
+                        : AppColors.textSecondary,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                     fontSize: 13,
                   ),
                 ),
@@ -263,7 +290,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Task Title',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
+            style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         Text(
           _task!['title']?.toString() ?? 'Untitled',
@@ -286,7 +316,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Priority',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                  style: TextStyle(
+                      color: AppColors.textSecondary, fontSize: 12)),
               const SizedBox(height: 6),
               PriorityBadge(
                 priority: _task!['priority']?.toString() ?? 'medium',
@@ -300,15 +331,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Due Date',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                  style: TextStyle(
+                      color: AppColors.textSecondary, fontSize: 12)),
               const SizedBox(height: 6),
               Row(
                 children: [
-                  const Icon(Icons.calendar_today, size: 14, color: AppColors.textSecondary),
+                  const Icon(Icons.calendar_today,
+                      size: 14, color: AppColors.textSecondary),
                   const SizedBox(width: 6),
                   Text(
-                    _task!['dueDate'] != null ? _formatDate(_task!['dueDate']) : 'No due date',
-                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                    _task!['dueDate'] != null
+                        ? _formatDate(_task!['dueDate'])
+                        : 'No due date',
+                    style: const TextStyle(
+                        color: AppColors.textPrimary, fontSize: 14),
                   ),
                 ],
               ),
@@ -324,7 +360,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Description',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
+            style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),
@@ -335,7 +374,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           ),
           child: Text(
             _task!['description']?.toString() ?? 'No description provided',
-            style: const TextStyle(color: AppColors.textPrimary, height: 1.5),
+            style: const TextStyle(
+                color: AppColors.textPrimary, height: 1.5),
           ),
         ),
       ],
@@ -343,10 +383,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   Widget _buildAssigneeCard() {
-    // assignedTo Firestore mein UID String hai, Map nahi
-    // _extractName safely handle karta hai dono cases
-    final String name = _extractName(_task!['assignedTo'], 'Team Member');
-    final String email = _extractEmail(_task!['assignedTo']);
+    // ✅ FIX: denormalized 'assignedToName' directly use karo
+    final String name    = _extractName(_task!['assignedTo'], 'assignedToName');
+    final String email   = _extractEmail(_task!['assignedTo']);
     final String initial = name.isNotEmpty ? name[0].toUpperCase() : 'T';
 
     return Container(
@@ -369,7 +408,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               child: Text(
                 initial,
                 style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
               ),
             ),
           ),
@@ -379,13 +420,16 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('Assigned To',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                    style: TextStyle(
+                        color: AppColors.textSecondary, fontSize: 11)),
                 Text(name,
                     style: const TextStyle(
-                        color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600)),
                 if (email.isNotEmpty)
                   Text(email,
-                      style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                      style: const TextStyle(
+                          color: AppColors.textMuted, fontSize: 12)),
               ],
             ),
           ),
@@ -395,12 +439,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   Widget _buildCreatedBy() {
-    // assignedBy Firestore mein UID String hai
-    final String creatorName = _extractName(_task!['assignedBy'], 'Unknown');
+    // ✅ FIX: denormalized 'assignedByName' use karo
+    final String creatorName =
+    _extractName(_task!['assignedBy'], 'assignedByName');
 
     return Row(
       children: [
-        const Icon(Icons.person_outline, size: 14, color: AppColors.textMuted),
+        const Icon(Icons.person_outline,
+            size: 14, color: AppColors.textMuted),
         const SizedBox(width: 6),
         Text(
           'Created by $creatorName',
@@ -415,4 +461,3 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 }
-

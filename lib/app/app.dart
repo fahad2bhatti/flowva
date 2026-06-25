@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'routes.dart';
 import '../core/theme/app_theme.dart';
 
-
-
 class FlowvaApp extends StatelessWidget {
   const FlowvaApp({super.key});
 
@@ -16,9 +14,6 @@ class FlowvaApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
       routerConfig: router,
-      
     );
   }
 }
-
-

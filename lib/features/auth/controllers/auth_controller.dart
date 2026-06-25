@@ -2,22 +2,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthController {
-  // Singleton pattern for easy global access
   static final AuthController instance = AuthController._internal();
   AuthController._internal();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Stream of auth state changes (used in main.dart)
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Get current Firebase user
-  User? getCurrentUser() {
-    return _auth.currentUser;
-  }
+  User? getCurrentUser() => _auth.currentUser;
 
-  // Login existing user
+  // ── Login ──────────────────────────────────────────────────────────────────
   Future<UserCredential> login({
     required String email,
     required String password,
@@ -28,20 +23,19 @@ class AuthController {
         password: password.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
+      throw Exception(_handleAuthException(e));
     } catch (e) {
       throw Exception('An unexpected error occurred during login.');
     }
   }
 
-  // Create new user, set display name, and save to Firestore
+  // ── Signup ─────────────────────────────────────────────────────────────────
   Future<UserCredential> signup({
     required String fullName,
     required String email,
     required String password,
   }) async {
     try {
-      // 1. Create user in Firebase Auth
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
@@ -49,50 +43,72 @@ class AuthController {
 
       final user = credential.user;
       if (user != null) {
-        // 2. Update display name in Firebase Auth profile
         await user.updateDisplayName(fullName.trim());
         await user.reload();
 
-        // 3. Save user info in Firestore "users" collection
+        // ✅ FIX 1: 'name' field (UserModel ke saath match)
+        // ✅ FIX 2: role lowercase 'member' (AuthService ke saath consistent)
+        // ✅ FIX 3: merge: true — CompleteProfileScreen baad mein update karega,
+        //           yeh fields overwrite nahi honge
+        // ✅ FIX 4: UserModel ke saare base fields initialize kiye
         await _firestore.collection('users').doc(user.uid).set({
-          'uid': user.uid,
-          'fullName': fullName.trim(),
-          'email': email.trim(),
-          'role': 'Member', // Default role
-          'createdAt': FieldValue.serverTimestamp(),
-          'photoUrl': '',
-        });
+          'uid'              : user.uid,
+          'name'             : fullName.trim(),   // ✅ was 'fullName'
+          'email'            : email.trim(),
+          'role'             : 'member',           // ✅ was 'Member'
+          'photoUrl'         : '',
+          'coverPhotoUrl'    : '',
+          'username'         : '',
+          'bio'              : '',
+          'groupIds'         : [],
+          'skills'           : [],
+          'badges'           : [],
+          'isVerified'       : false,
+          'isOnline'         : true,
+          'profileCompletion': 0,
+          'createdAt'        : FieldValue.serverTimestamp(),
+          'lastActive'       : FieldValue.serverTimestamp(),
+          'joinedAt'         : FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true)); // ✅ FIX 3: merge so later updates are safe
       }
 
       return credential;
     } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
+      throw Exception(_handleAuthException(e));
     } catch (e) {
       throw Exception('An unexpected error occurred during registration.');
     }
   }
 
-  // Reset password
+  // ── Reset Password ─────────────────────────────────────────────────────────
   Future<void> resetPassword({required String email}) async {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
     } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
+      throw Exception(_handleAuthException(e));
     } catch (e) {
       throw Exception('An unexpected error occurred during password reset.');
     }
   }
 
-  // Logout
+  // ── Logout ─────────────────────────────────────────────────────────────────
   Future<void> logout() async {
     try {
+      // Mark user offline before logout
+      final uid = _auth.currentUser?.uid;
+      if (uid != null) {
+        await _firestore.collection('users').doc(uid).update({
+          'isOnline'  : false,
+          'lastActive': FieldValue.serverTimestamp(),
+        });
+      }
       await _auth.signOut();
     } catch (e) {
       throw Exception('Failed to log out.');
     }
   }
 
-  // Custom readable error handling
+  // ── Error Handler ──────────────────────────────────────────────────────────
   String _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'invalid-email':
@@ -116,4 +132,3 @@ class AuthController {
     }
   }
 }
-
