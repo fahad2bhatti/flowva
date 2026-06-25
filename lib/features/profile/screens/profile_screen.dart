@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../data/models/user_model.dart';
 import '../controllers/profile_controller.dart';
-import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  final String? userId; // null = current user
+  final String? userId;
   const ProfileScreen({super.key, this.userId});
 
   @override
   Widget build(BuildContext context) {
-    final uid = userId ?? ProfileController.instance.currentUserId ?? '';
-    final isMe = userId == null || userId == ProfileController.instance.currentUserId;
+    final uid  = userId ?? ProfileController.instance.currentUserId ?? '';
+    final isMe = userId == null ||
+        userId == ProfileController.instance.currentUserId;
 
     return StreamBuilder<UserModel?>(
       stream: ProfileController.instance.getUserStreamById(uid),
@@ -20,10 +21,10 @@ class ProfileScreen extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             backgroundColor: AppColors.background,
-            body: Center(child: CircularProgressIndicator(color: AppColors.accent)),
+            body: Center(
+                child: CircularProgressIndicator(color: AppColors.accent)),
           );
         }
-
         final user = snapshot.data;
         if (user == null) {
           return const Scaffold(
@@ -40,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
           body: DefaultTabController(
             length: 2,
             child: NestedScrollView(
-              headerSliverBuilder: (context, _) => [
+              headerSliverBuilder: (ctx, _) => [
                 _ProfileSliverHeader(user: user, isMe: isMe),
               ],
               body: TabBarView(
@@ -57,9 +58,9 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sliver Header — Cover + Avatar + Info
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Sliver Header
+// ─────────────────────────────────────────────
 
 class _ProfileSliverHeader extends StatelessWidget {
   final UserModel user;
@@ -71,36 +72,36 @@ class _ProfileSliverHeader extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Column(
         children: [
-          // Cover + Avatar
           _CoverSection(user: user, isMe: isMe),
-
-          // Name + Username + Bio
+          const SizedBox(height: 48),
           _InfoSection(user: user, isMe: isMe),
-
-          // Stats row
+          const SizedBox(height: 16),
           _StatsRow(user: user),
-
-          // Profile completion
-          if (isMe && user.profileCompletion < 100)
+          if (isMe && user.profileCompletion < 100) ...[
+            const SizedBox(height: 12),
             _CompletionBar(percent: user.profileCompletion),
-
-          // Skills + Interests
-          if (user.skills.isNotEmpty) _SkillsSection(user: user),
-          if (user.interests.isNotEmpty) _InterestsSection(user: user),
-
-          // Status
-          if (user.currentStatus.isNotEmpty) _StatusCard(user: user),
-
-          // Featured
-          if (user.featuredItems.isNotEmpty) _FeaturedSection(user: user),
-
-          // Badges
-          if (user.badges.isNotEmpty) _BadgesSection(user: user),
-
+          ],
+          if (user.currentStatus.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _StatusCard(user: user),
+          ],
+          if (user.skills.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _TagsSection(title: 'Skills', tags: user.skills),
+          ],
+          if (user.interests.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _TagsSection(
+                title: 'Interests', tags: user.interests, isInterest: true),
+          ],
+          if (user.badges.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _BadgesSection(user: user),
+          ],
+          const SizedBox(height: 12),
           // Tab bar
           Container(
-            margin: const EdgeInsets.only(top: 8),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.surface,
               border: Border(
                 top: BorderSide(color: AppColors.border),
@@ -116,10 +117,7 @@ class _ProfileSliverHeader extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                   fontFamily: 'Inter'),
-              tabs: [
-                Tab(text: 'About'),
-                Tab(text: 'Posts'),
-              ],
+              tabs: [Tab(text: 'About'), Tab(text: 'Posts')],
             ),
           ),
         ],
@@ -128,9 +126,9 @@ class _ProfileSliverHeader extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Cover + Avatar Section
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Cover + Avatar
+// ─────────────────────────────────────────────
 
 class _CoverSection extends StatelessWidget {
   final UserModel user;
@@ -142,17 +140,16 @@ class _CoverSection extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Cover banner
+        // Cover
         Container(
-          height: 140,
+          height: 130,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.accent.withValues(alpha:  0.2),
+            color: AppColors.accent.withValues(alpha: 0.15),
             image: user.hasCover
                 ? DecorationImage(
-              image: NetworkImage(user.coverPhotoUrl),
-              fit: BoxFit.cover,
-            )
+                image: NetworkImage(user.coverPhotoUrl),
+                fit: BoxFit.cover)
                 : null,
           ),
           child: !user.hasCover
@@ -160,8 +157,8 @@ class _CoverSection extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.accent.withValues(alpha:  0.4),
-                  AppColors.accent.withValues(alpha:  0.1),
+                  AppColors.accent.withValues(alpha: 0.3),
+                  const Color(0xFF8B5CF6).withValues(alpha: 0.15),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -173,16 +170,14 @@ class _CoverSection extends StatelessWidget {
 
         // Back button
         Positioned(
-          top: 12,
-          left: 12,
+          top: 12, left: 12,
           child: SafeArea(
             child: GestureDetector(
-              onTap: () => Navigator.pop(context),
+              onTap: () => context.canPop() ? context.pop() : null,
               child: Container(
-                width: 36,
-                height: 36,
+                width: 36, height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha:  0.3),
+                  color: Colors.black.withValues(alpha: 0.35),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.arrow_back_rounded,
@@ -192,31 +187,30 @@ class _CoverSection extends StatelessWidget {
           ),
         ),
 
-        // Edit cover button (isMe)
+        // Edit button (isMe)
         if (isMe)
           Positioned(
-            top: 12,
-            right: 12,
+            top: 12, right: 12,
             child: SafeArea(
               child: GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-                ),
+                onTap: () => context.push('/profile/edit'),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha:  0.3),
+                    color: Colors.black.withValues(alpha: 0.35),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.edit_rounded, color: Colors.white, size: 14),
-                      SizedBox(width: 4),
+                      Icon(Icons.edit_rounded,
+                          color: Colors.white, size: 13),
+                      SizedBox(width: 5),
                       Text('Edit',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               fontFamily: 'Inter')),
                     ],
                   ),
@@ -227,22 +221,19 @@ class _CoverSection extends StatelessWidget {
 
         // Avatar
         Positioned(
-          bottom: -40,
-          left: 20,
+          bottom: -44, left: 20,
           child: Stack(
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 84, height: 84,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.background, width: 3),
                   color: AppColors.accent,
                   image: user.hasPhoto
                       ? DecorationImage(
-                    image: NetworkImage(user.photoUrl),
-                    fit: BoxFit.cover,
-                  )
+                      image: NetworkImage(user.photoUrl),
+                      fit: BoxFit.cover)
                       : null,
                 ),
                 child: !user.hasPhoto
@@ -261,18 +252,16 @@ class _CoverSection extends StatelessWidget {
                 )
                     : null,
               ),
-              // Online indicator
               if (user.isOnline)
                 Positioned(
-                  bottom: 4,
-                  right: 4,
+                  bottom: 4, right: 4,
                   child: Container(
-                    width: 14,
-                    height: 14,
+                    width: 14, height: 14,
                     decoration: BoxDecoration(
                       color: AppColors.success,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.background, width: 2),
+                      border: Border.all(
+                          color: AppColors.background, width: 2),
                     ),
                   ),
                 ),
@@ -280,39 +269,44 @@ class _CoverSection extends StatelessWidget {
           ),
         ),
 
-        // Follow/Message buttons (not me)
+        // Follow / Message (not me)
         if (!isMe)
           Positioned(
-            bottom: -20,
-            right: 16,
+            bottom: -36, right: 16,
             child: Row(
               children: [
-                _ActionButton(
+                _OutlineBtn(
                   label: 'Follow',
                   icon: Icons.person_add_rounded,
-                  onTap: () {},
-                  filled: true,
+                  onTap: () => ProfileController.instance
+                      .toggleFollow(user.id),
                 ),
                 const SizedBox(width: 8),
-                _ActionButton(
+                _OutlineBtn(
                   label: 'Message',
                   icon: Icons.message_rounded,
-                  onTap: () {},
-                  filled: false,
+                  onTap: () => context.push(
+                    '/dm/${user.id}',
+                    extra: {
+                      'otherUserName' : user.name,
+                      'otherUserPhoto': user.photoUrl,
+                    },
+                  ),
+                  filled: true,
                 ),
               ],
             ),
           ),
 
-        const SizedBox(height: 140),
+        const SizedBox(height: 130),
       ],
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Info Section — Name + Username + Bio
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Info Section
+// ─────────────────────────────────────────────
 
 class _InfoSection extends StatelessWidget {
   final UserModel user;
@@ -322,15 +316,15 @@ class _InfoSection extends StatelessWidget {
   String _lastActive(Timestamp t) {
     final diff = DateTime.now().difference(t.toDate());
     if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-    if (diff.inDays < 1) return '${diff.inHours}h ago';
+    if (diff.inHours < 1)   return '${diff.inMinutes}m ago';
+    if (diff.inDays < 1)    return '${diff.inHours}h ago';
     return '${diff.inDays}d ago';
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 48, 20, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -343,7 +337,7 @@ class _InfoSection extends StatelessWidget {
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     letterSpacing: -0.3,
                     fontFamily: 'Inter',
                   ),
@@ -351,15 +345,18 @@ class _InfoSection extends StatelessWidget {
               ),
               if (user.isVerified)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha:  0.1),
+                    color: AppColors.accent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.accent.withValues(alpha:  0.3)),
+                    border: Border.all(
+                        color: AppColors.accent.withValues(alpha: 0.3)),
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.verified_rounded, color: AppColors.accent, size: 14),
+                      Icon(Icons.verified_rounded,
+                          color: AppColors.accent, size: 13),
                       SizedBox(width: 4),
                       Text('Verified',
                           style: TextStyle(
@@ -373,26 +370,22 @@ class _InfoSection extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 4),
+          if (user.username.isNotEmpty) ...[
+            const SizedBox(height: 3),
+            Text('@${user.username}',
+                style: const TextStyle(
+                    color: AppColors.accent,
+                    fontSize: 13,
+                    fontFamily: 'Inter')),
+          ],
 
-          // Username
-          if (user.username.isNotEmpty)
-            Text(
-              '@${user.username}',
-              style: const TextStyle(
-                  color: AppColors.accent,
-                  fontSize: 14,
-                  fontFamily: 'Inter'),
-            ),
-
-          // Job role + Experience
           if (user.jobRole.isNotEmpty) ...[
             const SizedBox(height: 4),
             Row(
               children: [
                 const Icon(Icons.work_outline_rounded,
-                    size: 13, color: AppColors.textMuted),
-                const SizedBox(width: 4),
+                    size: 12, color: AppColors.textMuted),
+                const SizedBox(width: 5),
                 Text(
                   user.experienceLevel.isNotEmpty
                       ? '${user.experienceLevel} ${user.jobRole}'
@@ -406,7 +399,6 @@ class _InfoSection extends StatelessWidget {
             ),
           ],
 
-          // Bio
           if (user.hasBio) ...[
             const SizedBox(height: 10),
             Text(
@@ -419,21 +411,23 @@ class _InfoSection extends StatelessWidget {
             ),
           ],
 
-          // Last active
           const SizedBox(height: 8),
           Row(
             children: [
               Container(
-                width: 8,
-                height: 8,
+                width: 7, height: 7,
                 decoration: BoxDecoration(
-                  color: user.isOnline ? AppColors.success : AppColors.textMuted,
+                  color: user.isOnline
+                      ? AppColors.success
+                      : AppColors.textMuted,
                   shape: BoxShape.circle,
                 ),
               ),
               const SizedBox(width: 6),
               Text(
-                user.isOnline ? 'Online' : 'Last active ${_lastActive(user.lastActive)}',
+                user.isOnline
+                    ? 'Online'
+                    : 'Last active ${_lastActive(user.lastActive)}',
                 style: const TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 12,
@@ -441,56 +435,53 @@ class _InfoSection extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
         ],
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // Stats Row
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 
 class _StatsRow extends StatelessWidget {
   final UserModel user;
   const _StatsRow({required this.user});
 
+  String _fmt(int n) =>
+      n >= 1000 ? '${(n / 1000).toStringAsFixed(1)}K' : '$n';
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          _StatItem(label: 'Followers', value: _format(user.followerCount)),
-          _Divider(),
-          _StatItem(label: 'Following', value: _format(user.followingCount)),
-          _Divider(),
-          _StatItem(label: 'Groups', value: _format(user.groupCount)),
-          _Divider(),
-          _StatItem(label: 'Badges', value: _format(user.badgeCount)),
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            _StatCell(label: 'Followers', value: _fmt(user.followerCount)),
+            _VertLine(),
+            _StatCell(label: 'Following', value: _fmt(user.followingCount)),
+            _VertLine(),
+            _StatCell(label: 'Groups',    value: _fmt(user.groupCount)),
+            _VertLine(),
+            _StatCell(label: 'Badges',    value: _fmt(user.badgeCount)),
+          ],
+        ),
       ),
     );
   }
-
-  String _format(int n) {
-    if (n >= 1000) return '${(n / 1000).toStringAsFixed(1)}K';
-    return '$n';
-  }
 }
 
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
-  const _StatItem({required this.label, required this.value});
-
+class _StatCell extends StatelessWidget {
+  final String label, value;
+  const _StatCell({required this.label, required this.value});
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -500,7 +491,7 @@ class _StatItem extends StatelessWidget {
               style: const TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                   fontFamily: 'Inter')),
           const SizedBox(height: 2),
           Text(label,
@@ -514,20 +505,15 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _Divider extends StatelessWidget {
+class _VertLine extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 32,
-      color: AppColors.border,
-    );
-  }
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 30, color: AppColors.border);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Profile Completion Bar
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Completion Bar
+// ─────────────────────────────────────────────
 
 class _CompletionBar extends StatelessWidget {
   final int percent;
@@ -536,11 +522,11 @@ class _CompletionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border),
         ),
@@ -553,13 +539,13 @@ class _CompletionBar extends StatelessWidget {
                 const Text('Profile Strength',
                     style: TextStyle(
                         color: AppColors.textPrimary,
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Inter')),
                 Text('$percent%',
                     style: const TextStyle(
                         color: AppColors.accent,
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Inter')),
               ],
@@ -570,17 +556,18 @@ class _CompletionBar extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: percent / 100,
                 backgroundColor: AppColors.border,
-                valueColor: const AlwaysStoppedAnimation(AppColors.accent),
-                minHeight: 6,
+                valueColor:
+                const AlwaysStoppedAnimation(AppColors.accent),
+                minHeight: 5,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 5),
             Text(
               percent < 50
-                  ? 'Add more info to stand out!'
+                  ? 'Add more info to stand out'
                   : percent < 80
-                  ? 'Almost there — add skills & interests!'
-                  : 'Great profile! Add a photo to complete it.',
+                  ? 'Almost there — add skills and interests'
+                  : 'Add a photo to complete your profile',
               style: const TextStyle(
                   color: AppColors.textMuted,
                   fontSize: 11,
@@ -593,65 +580,9 @@ class _CompletionBar extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Skills Section
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _SkillsSection extends StatelessWidget {
-  final UserModel user;
-  const _SkillsSection({required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _SectionTitle(title: '🛠️ Skills'),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: user.skills.map((skill) => _Tag(label: skill)).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Interests Section
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _InterestsSection extends StatelessWidget {
-  final UserModel user;
-  const _InterestsSection({required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _SectionTitle(title: '✨ Interests'),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: user.interests.map((i) => _Tag(label: i, isInterest: true)).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // Status Card
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 
 class _StatusCard extends StatelessWidget {
   final UserModel user;
@@ -660,21 +591,20 @@ class _StatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            AppColors.accent.withValues(alpha:  0.1),
-            AppColors.surface,
-          ]),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.accent.withValues(alpha:  0.2)),
+          color: AppColors.accent.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+              color: AppColors.accent.withValues(alpha: 0.18)),
         ),
         child: Row(
           children: [
-            const Text('🔥', style: TextStyle(fontSize: 20)),
-            const SizedBox(width: 12),
+            const Icon(Icons.bolt_rounded,
+                color: AppColors.accent, size: 16),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 user.currentStatus,
@@ -691,143 +621,159 @@ class _StatusCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Featured Section
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Tags Section — Skills + Interests
+// ─────────────────────────────────────────────
 
-class _FeaturedSection extends StatelessWidget {
-  final UserModel user;
-  const _FeaturedSection({required this.user});
+class _TagsSection extends StatelessWidget {
+  final String title;
+  final List<String> tags;
+  final bool isInterest;
+
+  const _TagsSection({
+    required this.title,
+    required this.tags,
+    this.isInterest = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle(title: '📌 Featured'),
+          Text(
+            title.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textMuted,
+              letterSpacing: 1.5,
+              fontFamily: 'Inter',
+            ),
+          ),
           const SizedBox(height: 8),
-          ...user.featuredItems.map((item) => Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.card,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.link_rounded, color: AppColors.accent, size: 18),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    item['title']?.toString() ?? 'Featured Item',
-                    style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 13,
-                        fontFamily: 'Inter'),
-                  ),
-                ),
-                const Icon(Icons.arrow_forward_ios_rounded,
-                    size: 12, color: AppColors.textMuted),
-              ],
-            ),
-          )),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: tags
+                .map((t) => _Tag(label: t, isInterest: isInterest))
+                .toList(),
+          ),
         ],
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // Badges Section
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 
 class _BadgesSection extends StatelessWidget {
   final UserModel user;
   const _BadgesSection({required this.user});
 
-  Map<String, Map<String, String>> get _badgeInfo => {
-    'early_adopter': {'icon': '🏆', 'label': 'Early Adopter'},
-    'top_contributor': {'icon': '⭐', 'label': 'Top Contributor'},
-    'verified': {'icon': '✅', 'label': 'Verified'},
-    'group_leader': {'icon': '👑', 'label': 'Group Leader'},
-    'task_master': {'icon': '🎯', 'label': 'Task Master'},
+  static const _badgeInfo = {
+    'early_adopter'   : {'icon': Icons.emoji_events_rounded,  'label': 'Early Adopter'},
+    'top_contributor' : {'icon': Icons.star_rounded,           'label': 'Top Contributor'},
+    'verified'        : {'icon': Icons.verified_rounded,       'label': 'Verified'},
+    'group_leader'    : {'icon': Icons.workspace_premium_rounded,'label': 'Group Leader'},
+    'task_master'     : {'icon': Icons.task_alt_rounded,       'label': 'Task Master'},
   };
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle(title: '🏅 Badges'),
+          const Text(
+            'BADGES',
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textMuted,
+              letterSpacing: 1.5,
+              fontFamily: 'Inter',
+            ),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: user.badges.map((badge) {
-              final info = _badgeInfo[badge] ??
-                  {'icon': '🎖️', 'label': badge.replaceAll('_', ' ')};
+              final info = _badgeInfo[badge];
+              final icon  = info?['icon']  as IconData? ?? Icons.military_tech_rounded;
+              final label = info?['label'] as String?  ?? badge.replaceAll('_', ' ');
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: AppColors.border),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(info['icon']!, style: const TextStyle(fontSize: 14)),
+                    Icon(icon, color: AppColors.accent, size: 13),
                     const SizedBox(width: 6),
-                    Text(
-                      info['label']!,
-                      style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Inter'),
-                    ),
+                    Text(label,
+                        style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Inter')),
                   ],
                 ),
               );
             }).toList(),
           ),
-          const SizedBox(height: 12),
         ],
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // About Tab
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 
 class _AboutTab extends StatelessWidget {
   final UserModel user;
   const _AboutTab({required this.user});
 
+  String _formatDate(Timestamp t) {
+    final d = t.toDate();
+    const months = [
+      'Jan','Feb','Mar','Apr','May','Jun',
+      'Jul','Aug','Sep','Oct','Nov','Dec'
+    ];
+    return '${months[d.month - 1]} ${d.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
       children: [
         if (user.languages.isNotEmpty) ...[
-          const _SectionTitle(title: '🌐 Languages'),
+          const _SectionLabel(text: 'LANGUAGES'),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: user.languages.map((l) => _Tag(label: l)).toList(),
+            children: user.languages
+                .map((l) => _Tag(label: l))
+                .toList(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
         ],
-        const _SectionTitle(title: '📅 Member Since'),
-        const SizedBox(height: 8),
+        const _SectionLabel(text: 'MEMBER SINCE'),
+        const SizedBox(height: 6),
         Text(
           _formatDate(user.joinedAt),
           style: const TextStyle(
@@ -835,24 +781,14 @@ class _AboutTab extends StatelessWidget {
               fontSize: 14,
               fontFamily: 'Inter'),
         ),
-        const SizedBox(height: 80),
       ],
     );
   }
-
-  String _formatDate(Timestamp t) {
-    final d = t.toDate();
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return '${months[d.month - 1]} ${d.year}';
-  }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // Posts Tab
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
 
 class _PostsTab extends StatelessWidget {
   final String userId;
@@ -860,7 +796,7 @@ class _PostsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collectionGroup('posts')
           .where('authorId', isEqualTo: userId)
@@ -872,16 +808,23 @@ class _PostsTab extends StatelessWidget {
           return const Center(
               child: CircularProgressIndicator(color: AppColors.accent));
         }
-
         final posts = snapshot.data?.docs ?? [];
         if (posts.isEmpty) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('📝', style: TextStyle(fontSize: 40)),
-                SizedBox(height: 12),
-                Text('No posts yet',
+                Container(
+                  width: 64, height: 64,
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.article_outlined,
+                      color: AppColors.accent, size: 28),
+                ),
+                const SizedBox(height: 12),
+                const Text('No posts yet',
                     style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
@@ -890,18 +833,17 @@ class _PostsTab extends StatelessWidget {
             ),
           );
         }
-
         return ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
           itemCount: posts.length,
           itemBuilder: (ctx, i) {
-            final data = posts[i].data();
+            final data = posts[i].data() as Map<String, dynamic>;
             return Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.card,
-                borderRadius: BorderRadius.circular(14),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border),
               ),
               child: Text(
@@ -920,26 +862,24 @@ class _PostsTab extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared Small Widgets
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Shared Widgets
+// ─────────────────────────────────────────────
 
-class _SectionTitle extends StatelessWidget {
-  final String title;
-  const _SectionTitle({required this.title});
-
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel({required this.text});
   @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: const TextStyle(
-        color: AppColors.textPrimary,
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        fontFamily: 'Inter',
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Text(
+    text,
+    style: const TextStyle(
+      fontSize: 9,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textMuted,
+      letterSpacing: 1.5,
+      fontFamily: 'Inter',
+    ),
+  );
 }
 
 class _Tag extends StatelessWidget {
@@ -953,12 +893,12 @@ class _Tag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: isInterest
-            ? AppColors.accent.withValues(alpha:  0.08)
+            ? AppColors.accent.withValues(alpha: 0.08)
             : AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isInterest
-              ? AppColors.accent.withValues(alpha:  0.3)
+              ? AppColors.accent.withValues(alpha: 0.25)
               : AppColors.border,
         ),
       ),
@@ -974,16 +914,17 @@ class _Tag extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
+class _OutlineBtn extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
   final bool filled;
-  const _ActionButton({
+
+  const _OutlineBtn({
     required this.label,
     required this.icon,
     required this.onTap,
-    required this.filled,
+    this.filled = false,
   });
 
   @override
@@ -991,16 +932,19 @@ class _ActionButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: filled ? AppColors.accent : Colors.black.withValues(alpha:  0.3),
+          color: filled
+              ? AppColors.accent
+              : Colors.black.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(20),
           border: filled ? null : Border.all(color: Colors.white38),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white, size: 14),
-            const SizedBox(width: 6),
+            Icon(icon, color: Colors.white, size: 13),
+            const SizedBox(width: 5),
             Text(label,
                 style: const TextStyle(
                     color: Colors.white,
@@ -1013,4 +957,3 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
-
