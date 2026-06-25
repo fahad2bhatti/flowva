@@ -264,7 +264,7 @@ final GoRouter router = GoRouter(
           DMScreen(
             otherUserId: s.pathParameters['otherUserId']!,
             otherUserName: extra['otherUserName'] as String? ?? 'User',
-            otherUserPhoto: extra['otherUserPhoto'] as String?,
+            otherUserPhoto: extra['otherUserPhoto'] as String? ?? "",
           ),
         );
       },

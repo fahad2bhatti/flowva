@@ -10,21 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/data/models/dm_model.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/repositories/dm_repository.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/chat/screens/dm_list_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/chat/screens/dm_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/app/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/app.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/app/routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/routes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/post_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/post_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/post_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/post_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/services/notification_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/services/notification_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/auth/controllers/auth_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/controllers/auth_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/tasks/controllers/task_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/tasks/controllers/task_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/tasks/screens/task_detail_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/tasks/screens/task_detail_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/dm_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/dm_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/dm_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/dm_repository.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

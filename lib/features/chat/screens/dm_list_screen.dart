@@ -1,9 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../data/models/dm_model.dart';
+import '../../../data/repositories/dm_repository.dart';
 
 class DmListScreen extends StatelessWidget {
   const DmListScreen({super.key});
@@ -23,62 +24,60 @@ class DmListScreen extends StatelessWidget {
             color: AppColors.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.w600,
+            fontFamily: 'Inter',
           ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: AppColors.surface, height: 1),
+          child: Container(color: AppColors.border, height: 1),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('dm_conversations')
-            .where('participants', arrayContains: currentUid)
-            .orderBy('lastTimestamp', descending: true)
-            .limit(30)
-            .snapshots(),
+      // ✅ FIX: DmRepository.getMyDms() use karo
+      // collection: 'dms' (not 'dm_conversations')
+      body: StreamBuilder<List<DmModel>>(
+        stream: DmRepository.instance.getMyDms(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+              child: CircularProgressIndicator(color: AppColors.accent),
             );
           }
 
-          final docs = snapshot.data!.docs;
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                snapshot.error.toString().replaceAll('Exception: ', ''),
+                style: const TextStyle(color: AppColors.error),
+              ),
+            );
+          }
 
-          if (docs.isEmpty) {
+          final dms = snapshot.data ?? [];
+
+          if (dms.isEmpty) {
             return const _EmptyState();
           }
 
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            itemCount: docs.length,
+            itemCount: dms.length,
             itemBuilder: (ctx, i) {
-              final data = docs[i].data() as Map<String, dynamic>;
-              final participants =
-              List<String>.from(data['participants'] ?? []);
-              final otherUid = participants.firstWhere(
-                    (uid) => uid != currentUid,
-                orElse: () => '',
-              );
-
-              final participantNames =
-                  data['participantNames'] as Map<String, dynamic>? ?? {};
-              final otherName =
-                  participantNames[otherUid] as String? ?? 'User';
-
-              final lastMessage = data['lastMessage'] as String? ?? '';
-              final lastTimestamp =
-              (data['lastTimestamp'] as Timestamp?)?.toDate();
-              final lastSenderId = data['lastSenderId'] as String? ?? '';
-              final isMe = lastSenderId == currentUid;
+              final dm = dms[i];
+              // ✅ FIX: DmModel helpers use karo — otherUserName, otherUserPhoto
+              final otherUid   = dm.otherUserId(currentUid);
+              final otherName  = dm.otherUserName(currentUid);
+              final otherPhoto = dm.otherUserPhoto(currentUid);
+              final unread     = dm.myUnreadCount(currentUid);
+              final isMe       = dm.lastMessageSenderId == currentUid;
 
               return _ConversationTile(
-                otherUid: otherUid,
-                otherName: otherName,
-                lastMessage: lastMessage,
-                lastTimestamp: lastTimestamp,
-                isMe: isMe,
+                otherUid      : otherUid,
+                otherName     : otherName,
+                otherPhoto    : otherPhoto,
+                lastMessage   : dm.lastMessage,
+                lastMessageAt : dm.lastMessageAt.toDate(),
+                isMe          : isMe,
+                unreadCount   : unread,
               );
             },
           );
@@ -97,18 +96,37 @@ class _EmptyState extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.chat_bubble_outline_rounded,
-              size: 64, color: AppColors.textMuted),
-          SizedBox(height: 16),
-          Text(
-            'No conversations yet',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+        children: [
+          Container(
+            width: 80, height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.accent.withValues(alpha: 0.1),
+            ),
+            child: const Icon(
+              Icons.chat_bubble_outline_rounded,
+              size: 36,
+              color: AppColors.accent,
+            ),
           ),
-          SizedBox(height: 6),
-          Text(
-            'Go to Members and tap a user to DM them',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+          const SizedBox(height: 16),
+          const Text(
+            'No conversations yet',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Inter',
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Go to Members and tap a user to message them',
+            style: TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 13,
+              fontFamily: 'Inter',
+            ),
           ),
         ],
       ),
@@ -118,128 +136,161 @@ class _EmptyState extends StatelessWidget {
 
 // ── Conversation Tile ─────────────────────────────────────────────────────────
 class _ConversationTile extends StatelessWidget {
-  final String otherUid;
-  final String otherName;
-  final String lastMessage;
-  final DateTime? lastTimestamp;
-  final bool isMe;
+  final String    otherUid;
+  final String    otherName;
+  final String    otherPhoto;
+  final String    lastMessage;
+  final DateTime  lastMessageAt;
+  final bool      isMe;
+  final int       unreadCount;
 
   const _ConversationTile({
     required this.otherUid,
     required this.otherName,
+    required this.otherPhoto,
     required this.lastMessage,
-    required this.lastTimestamp,
+    required this.lastMessageAt,
     required this.isMe,
+    required this.unreadCount,
   });
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('users')
-          .doc(otherUid)
-          .get(),
-      builder: (ctx, snap) {
-        final userData =
-        snap.hasData ? snap.data!.data() as Map<String, dynamic>? : null;
-        final photoURL = userData?['photoURL'] as String?;
-        final displayName =
-            userData?['displayName'] as String? ?? otherName;
+    final initial = otherName.isNotEmpty ? otherName[0].toUpperCase() : '?';
+    final hasUnread = unreadCount > 0;
 
-        return GestureDetector(
-          onTap: () => context.push(
-            '/dm/$otherUid',
-            extra: {
-              'otherUserName': displayName,
-              'otherUserPhoto': photoURL,
-            },
+    return GestureDetector(
+      onTap: () => context.push(
+        '/dm/$otherUid',
+        extra: {
+          'otherUserName' : otherName,
+          'otherUserPhoto': otherPhoto,
+        },
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          // ✅ Unread conversations slightly highlighted
+          color: hasUnread
+              ? AppColors.accent.withValues(alpha: 0.05)
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: hasUnread
+                ? AppColors.accent.withValues(alpha: 0.2)
+                : AppColors.border,
           ),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.07),
-              ),
-            ),
-            child: Row(
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Stack(
               children: [
-                // Avatar
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: AppColors.accent,
-                  backgroundImage: photoURL != null && photoURL.isNotEmpty
-                      ? NetworkImage(photoURL)
+                  backgroundColor: AppColors.accent.withValues(alpha: 0.15),
+                  backgroundImage: otherPhoto.isNotEmpty
+                      ? NetworkImage(otherPhoto)
                       : null,
-                  child: photoURL == null || photoURL.isEmpty
+                  child: otherPhoto.isEmpty
                       ? Text(
-                    displayName.isNotEmpty
-                        ? displayName[0].toUpperCase()
-                        : '?',
+                    initial,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.accent,
                       fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   )
                       : null,
                 ),
-                const SizedBox(width: 12),
-
-                // Name + last message
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        displayName,
+                // ✅ Unread dot
+                if (hasUnread)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 16, height: 16,
+                      decoration: const BoxDecoration(
+                        color: AppColors.accent,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        unreadCount > 9 ? '9+' : '$unreadCount',
                         style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        lastMessage.isEmpty
-                            ? 'No messages yet'
-                            : isMe
-                            ? 'You: $lastMessage'
-                            : lastMessage,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Timestamp
-                if (lastTimestamp != null)
-                  Text(
-                    _formatTime(lastTimestamp!),
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 11,
                     ),
                   ),
               ],
             ),
-          ),
-        );
-      },
+            const SizedBox(width: 12),
+
+            // Name + last message
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    otherName,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: hasUnread
+                          ? FontWeight.w700
+                          : FontWeight.w600,
+                      fontSize: 15,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    lastMessage.isEmpty
+                        ? 'No messages yet'
+                        : isMe
+                        ? 'You: $lastMessage'
+                        : lastMessage,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: hasUnread
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
+                      fontWeight: hasUnread
+                          ? FontWeight.w500
+                          : FontWeight.normal,
+                      fontSize: 13,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Timestamp
+            Text(
+              _formatTime(lastMessageAt),
+              style: TextStyle(
+                color: hasUnread ? AppColors.accent : AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
+                fontFamily: 'Inter',
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   String _formatTime(DateTime dt) {
-    final now = DateTime.now();
+    final now  = DateTime.now();
     final diff = now.difference(dt).inDays;
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
+    final h    = dt.hour.toString().padLeft(2, '0');
+    final m    = dt.minute.toString().padLeft(2, '0');
     if (diff == 0) return '$h:$m';
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     if (diff < 7) return days[dt.weekday - 1];
