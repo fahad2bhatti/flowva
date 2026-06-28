@@ -23,7 +23,8 @@ class ProfileController {
         .collection('users')
         .doc(uid)
         .snapshots()
-        .map((doc) => doc.exists ? UserModel.fromMap(doc.data()!, doc.id) : null);
+        .map((doc) =>
+    doc.exists ? UserModel.fromMap(doc.data()!, doc.id) : null);
   }
 
   // ─────────────────────────────────────────────
@@ -41,7 +42,8 @@ class ProfileController {
         .collection('users')
         .doc(uid)
         .snapshots()
-        .map((doc) => doc.exists ? UserModel.fromMap(doc.data()!, doc.id) : null);
+        .map((doc) =>
+    doc.exists ? UserModel.fromMap(doc.data()!, doc.id) : null);
   }
 
   // ─────────────────────────────────────────────
@@ -52,36 +54,35 @@ class ProfileController {
     final uid = currentUserId;
     if (uid == null) throw Exception('Not logged in');
 
-    // Profile completion recalculate
     final existing = await getUserById(uid);
     if (existing != null) {
       final updated = existing.copyWith(
-        name: data['name'] ?? existing.name,
-        username: data['username'] ?? existing.username,
-        bio: data['bio'] ?? existing.bio,
-        jobRole: data['jobRole'] ?? existing.jobRole,
-        experienceLevel: data['experienceLevel'] ?? existing.experienceLevel,
-        skills: data['skills'] != null
+        name           : data['name']            ?? existing.name,
+        username       : data['username']         ?? existing.username,
+        bio            : data['bio']              ?? existing.bio,
+        jobRole        : data['jobRole']          ?? existing.jobRole,
+        experienceLevel: data['experienceLevel']  ?? existing.experienceLevel,
+        skills         : data['skills'] != null
             ? List<String>.from(data['skills'])
             : existing.skills,
-        interests: data['interests'] != null
+        interests      : data['interests'] != null
             ? List<String>.from(data['interests'])
             : existing.interests,
-        currentStatus: data['currentStatus'] ?? existing.currentStatus,
-        photoUrl: data['photoUrl'] ?? existing.photoUrl,
-        coverPhotoUrl: data['coverPhotoUrl'] ?? existing.coverPhotoUrl,
+        currentStatus  : data['currentStatus']   ?? existing.currentStatus,
+        photoUrl       : data['photoUrl']         ?? existing.photoUrl,
+        coverPhotoUrl  : data['coverPhotoUrl']    ?? existing.coverPhotoUrl,
       );
       data['profileCompletion'] = updated.calculateCompletion();
     }
 
-    data['updatedAt'] = FieldValue.serverTimestamp();
+    data['updatedAt']  = FieldValue.serverTimestamp();
     data['lastActive'] = FieldValue.serverTimestamp();
 
     await _firestore.collection('users').doc(uid).update(data);
   }
 
   // ─────────────────────────────────────────────
-  // Follow / Unfollow
+  // Follow / Unfollow  ✅ Fixed: counts bhi update
   // ─────────────────────────────────────────────
 
   Future<void> toggleFollow(String targetUid) async {
@@ -89,29 +90,32 @@ class ProfileController {
     if (uid == null) throw Exception('Not logged in');
     if (uid == targetUid) return;
 
-    final batch = _firestore.batch();
-    final myRef = _firestore.collection('users').doc(uid);
+    final myRef     = _firestore.collection('users').doc(uid);
     final targetRef = _firestore.collection('users').doc(targetUid);
 
-    final myDoc = await myRef.get();
+    final myDoc     = await myRef.get();
     final following = List<String>.from(myDoc.data()?['following'] ?? []);
     final isFollowing = following.contains(targetUid);
 
+    final batch = _firestore.batch();
+
     if (isFollowing) {
-      // Unfollow
       batch.update(myRef, {
-        'following': FieldValue.arrayRemove([targetUid]),
+        'following'      : FieldValue.arrayRemove([targetUid]),
+        'followingCount' : FieldValue.increment(-1),        // ✅ fix
       });
       batch.update(targetRef, {
-        'followers': FieldValue.arrayRemove([uid]),
+        'followers'     : FieldValue.arrayRemove([uid]),
+        'followerCount' : FieldValue.increment(-1),         // ✅ fix
       });
     } else {
-      // Follow
       batch.update(myRef, {
-        'following': FieldValue.arrayUnion([targetUid]),
+        'following'      : FieldValue.arrayUnion([targetUid]),
+        'followingCount' : FieldValue.increment(1),         // ✅ fix
       });
       batch.update(targetRef, {
-        'followers': FieldValue.arrayUnion([uid]),
+        'followers'     : FieldValue.arrayUnion([uid]),
+        'followerCount' : FieldValue.increment(1),          // ✅ fix
       });
     }
 
@@ -126,17 +130,17 @@ class ProfileController {
     final uid = currentUserId;
     if (uid == null) return;
     await _firestore.collection('users').doc(uid).update({
-      'isOnline': isOnline,
-      'lastActive': FieldValue.serverTimestamp(),
+      'isOnline'   : isOnline,
+      'lastActive' : FieldValue.serverTimestamp(),
     });
   }
 
   // ─────────────────────────────────────────────
-  // Check Username Availability
+  // Check Username Availability  ✅ Self-aware
   // ─────────────────────────────────────────────
 
   Future<bool> isUsernameAvailable(String username) async {
-    final uid = currentUserId;
+    final uid   = currentUserId;
     final query = await _firestore
         .collection('users')
         .where('username', isEqualTo: username.toLowerCase().trim())
@@ -144,8 +148,6 @@ class ProfileController {
         .get();
 
     if (query.docs.isEmpty) return true;
-    // If only result is current user — still available
-    return query.docs.first.id == uid;
+    return query.docs.first.id == uid; // own username = still available
   }
 }
-

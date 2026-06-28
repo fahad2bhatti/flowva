@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../data/models/group_model.dart';
 
 import '../features/auth/screens/splash_screen.dart';
 import '../features/auth/screens/login_screen.dart';
@@ -10,10 +12,16 @@ import '../features/auth/screens/signup_screen.dart';
 import '../features/auth/screens/forgot_password_screen.dart';
 
 import '../features/groups/screens/home_screen.dart';
+import '../features/groups/screens/create_group_screen.dart';
+import '../features/groups/screens/join_group_screen.dart';
+import '../features/feed/screens/group_feed_screen.dart';
+import '../features/chat/screens/chat_screens.dart';
 
 import '../features/chat/screens/group_chat_screen.dart';
 import '../features/chat/screens/dm_screen.dart';           // ← ADDED
 import '../features/chat/screens/dm_list_screen.dart';      // ← ADDED
+
+import '../features/search/screens/search_screen.dart';
 
 import '../features/tasks/screens/tasks_screen.dart';
 
@@ -137,6 +145,74 @@ final GoRouter router = GoRouter(
       pageBuilder: (c, s) => _slideTransition(c, s, const HomeScreen()),
     ),
 
+    // ── Legacy/Alias Auth ─────────────────────────────────────────────────────
+    GoRoute(
+      path: '/login',
+      pageBuilder: (c, s) => _fadeTransition(c, s, const LoginScreen()),
+    ),
+
+    // ── Group Action Routes ────────────────────────────────────────────────────
+    GoRoute(
+      path: '/create-group',
+      pageBuilder: (c, s) => _slideTransition(c, s, const CreateGroupScreen()),
+    ),
+    GoRoute(
+      path: '/join-group',
+      pageBuilder: (c, s) => _slideTransition(c, s, const JoinGroupScreen()),
+    ),
+    GoRoute(
+      path: '/group/:groupId',
+      pageBuilder: (c, s) {
+        final group = s.extra as GroupModel?;
+        if (group != null) {
+          return _slideTransition(c, s, GroupFeedScreen(group: group));
+        }
+        return _slideTransition(
+          c, s,
+          FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('groups')
+                .doc(s.pathParameters['groupId'])
+                .get(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(color: AppColors.accent),
+                  ),
+                );
+              }
+              if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text(
+                      'Group not found',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  ),
+                );
+              }
+              return GroupFeedScreen(
+                group: GroupModel.fromFirestore(snapshot.data!),
+              );
+            },
+          ),
+        );
+      },
+    ),
+
+    // ── Chat Routes ──────────────────────────────────────────────────────────
+    GoRoute(
+      path: '/chat/:groupId',
+      pageBuilder: (c, s) => _slideTransition(
+        c, s,
+        ChatScreen(
+          groupId: s.pathParameters['groupId']!,
+          channelName: 'general',
+        ),
+      ),
+    ),
+
     // ── Group routes ──────────────────────────────────────────────────────────
     GoRoute(
       path: '/group/:groupId/feed',
@@ -206,6 +282,17 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/profile',
       pageBuilder: (c, s) => _slideTransition(c, s, const ProfileScreen()),
+    ),
+    GoRoute(
+      path: '/profile/:userId',
+      pageBuilder: (c, s) => _slideTransition(
+        c, s,
+        ProfileScreen(userId: s.pathParameters['userId']),
+      ),
+    ),
+    GoRoute(
+      path: '/search',
+      pageBuilder: (c, s) => _slideTransition(c, s, const SearchScreen()),
     ),
     GoRoute(
       path: '/profile/edit',

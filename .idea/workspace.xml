@@ -10,7 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/features/search/controllers/search_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/features/search/screens/search_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/chat/screens/dm_list_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/chat/screens/dm_list_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/chat/screens/dm_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/chat/screens/dm_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/profile/controllers/profile_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/controllers/profile_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/profile/screens/complete_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/screens/complete_profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/profile/screens/edit_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/screens/edit_profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/profile/screens/profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/screens/profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/shared/widgets/bottom_nav_bar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/widgets/bottom_nav_bar.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

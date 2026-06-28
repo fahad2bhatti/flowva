@@ -18,6 +18,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   String _selectedJobRole    = '';
   String _selectedExperience = '';
+  String _originalUsername   = ''; // ✅ track original
   final List<String> _selectedSkills    = [];
   final List<String> _selectedInterests = [];
 
@@ -25,19 +26,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isFetching = true;
 
   static const _jobRoles = [
-    'Developer','Designer','Manager','Marketing','Student','Freelancer','Other',
+    'Developer', 'Designer', 'Manager', 'Marketing',
+    'Student', 'Freelancer', 'Other',
   ];
   static const _experienceLevels = [
-    'Student','Junior','Mid-Level','Senior','Lead',
+    'Student', 'Junior', 'Mid-Level', 'Senior', 'Lead',
   ];
   static const _skillOptions = [
-    'Flutter','React','Node.js','Python','Firebase',
-    'UI/UX','Figma','Java','Swift','Kotlin','DevOps','AI/ML','Blockchain','Product',
+    'Flutter', 'React', 'Node.js', 'Python', 'Firebase',
+    'UI/UX', 'Figma', 'Java', 'Swift', 'Kotlin',
+    'DevOps', 'AI/ML', 'Blockchain', 'Product',
   ];
   static const _interestOptions = [
-    '#Coding','#Gym','#Design','#AI','#Startups',
-    '#Gaming','#Reading','#Music','#Travel','#Photography',
-    '#Finance','#Fitness','#Writing','#Crypto',
+    '#Coding', '#Gym', '#Design', '#AI', '#Startups',
+    '#Gaming', '#Reading', '#Music', '#Travel', '#Photography',
+    '#Finance', '#Fitness', '#Writing', '#Crypto',
   ];
 
   @override
@@ -57,47 +60,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _loadCurrentData() async {
     final uid = ProfileController.instance.currentUserId;
-    if (uid == null) return;
+    if (uid == null) {
+      if (mounted) setState(() => _isFetching = false);
+      return;
+    }
     final user = await ProfileController.instance.getUserById(uid);
-    if (user != null && mounted) {
+    if (mounted) {
       setState(() {
-        _nameController.text      = user.name;
-        _usernameController.text  = user.username;
-        _bioController.text       = user.bio;
-        _statusController.text    = user.currentStatus;
-        _selectedJobRole          = user.jobRole;
-        _selectedExperience       = user.experienceLevel;
-        _selectedSkills
-          ..clear()
-          ..addAll(user.skills);
-        _selectedInterests
-          ..clear()
-          ..addAll(user.interests);
+        if (user != null) {
+          _nameController.text     = user.name;
+          _usernameController.text = user.username;
+          _bioController.text      = user.bio;
+          _statusController.text   = user.currentStatus;
+          _selectedJobRole         = user.jobRole;
+          _selectedExperience      = user.experienceLevel;
+          _originalUsername        = user.username; // ✅ save original
+          _selectedSkills
+            ..clear()
+            ..addAll(user.skills);
+          _selectedInterests
+            ..clear()
+            ..addAll(user.interests);
+        }
         _isFetching = false;
       });
-    } else {
-      if (mounted) setState(() => _isFetching = false);
     }
   }
 
   Future<void> _save() async {
-    if (_nameController.text.trim().isEmpty) {
-      _showError('Name required hai'); return;
+    final name     = _nameController.text.trim();
+    final username = _usernameController.text.trim().toLowerCase();
+
+    if (name.isEmpty) {
+      _showError('Name required hai');
+      return;
     }
-    if (_usernameController.text.trim().isEmpty) {
-      _showError('Username required hai'); return;
+    if (username.isEmpty) {
+      _showError('Username required hai');
+      return;
     }
+
     setState(() => _isLoading = true);
+
     try {
-      final available = await ProfileController.instance
-          .isUsernameAvailable(_usernameController.text.trim());
-      if (!available) {
-        _showError('Username already taken — koi aur try karo');
-        return;
+      // ✅ Only check if username actually changed
+      if (username != _originalUsername) {
+        final available =
+        await ProfileController.instance.isUsernameAvailable(username);
+        if (!available) {
+          _showError('Username already taken — koi aur try karo');
+          return; // finally block handles _isLoading = false
+        }
       }
+
       await ProfileController.instance.updateProfile({
-        'name'           : _nameController.text.trim(),
-        'username'       : _usernameController.text.trim().toLowerCase(),
+        'name'           : name,
+        'username'       : username,
         'bio'            : _bioController.text.trim(),
         'currentStatus'  : _statusController.text.trim(),
         'jobRole'        : _selectedJobRole,
@@ -105,28 +123,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'skills'         : _selectedSkills,
         'interests'      : _selectedInterests,
       });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Profile updated'),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
+          content         : Text('Profile updated'),
+          backgroundColor : AppColors.success,
+          behavior        : SnackBarBehavior.floating,
         ));
-        context.canPop() ? context.pop() : context.go('/profile'); // ✅ GoRouter
+        context.canPop() ? context.pop() : context.go('/profile');
       }
     } catch (e) {
       _showError(e.toString().replaceAll('Exception: ', ''));
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false); // ✅ always resets
     }
   }
 
   void _showError(String msg) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg),
-      backgroundColor: AppColors.error,
-      behavior: SnackBarBehavior.floating,
+      content         : Text(msg),
+      backgroundColor : AppColors.error,
+      behavior        : SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.all(16),
+      margin          : const EdgeInsets.all(16),
     ));
   }
 
@@ -135,19 +155,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
+        backgroundColor : AppColors.background,
+        elevation       : 0,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
+          icon     : const Icon(Icons.close_rounded, color: AppColors.textSecondary),
           onPressed: () =>
-          context.canPop() ? context.pop() : context.go('/profile'), // ✅ GoRouter
+          context.canPop() ? context.pop() : context.go('/profile'),
         ),
         title: const Text('Edit Profile',
             style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Inter')),
+                color      : AppColors.textPrimary,
+                fontSize   : 16,
+                fontWeight : FontWeight.w600,
+                fontFamily : 'Inter')),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -160,10 +180,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       strokeWidth: 2, color: AppColors.accent))
                   : const Text('Save',
                   style: TextStyle(
-                      color: AppColors.accent,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      fontFamily: 'Inter')),
+                      color      : AppColors.accent,
+                      fontWeight : FontWeight.w600,
+                      fontSize   : 15,
+                      fontFamily : 'Inter')),
             ),
           ),
         ],
@@ -180,31 +200,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Basic Info
             const _SectionHeader(text: 'BASIC INFO'),
             const SizedBox(height: 12),
-            _Field(controller: _nameController,
-                label: 'Full Name',
-                icon: Icons.person_outline_rounded),
+            _Field(
+                controller : _nameController,
+                label      : 'Full Name',
+                icon       : Icons.person_outline_rounded),
             const SizedBox(height: 10),
-            _Field(controller: _usernameController,
-                label: 'Username',
-                icon: Icons.alternate_email_rounded,
-                prefix: '@'),
+            _Field(
+                controller : _usernameController,
+                label      : 'Username',
+                icon       : Icons.alternate_email_rounded,
+                prefix     : '@'),
             const SizedBox(height: 10),
-            _Field(controller: _bioController,
-                label: 'Bio',
-                icon: Icons.edit_note_rounded,
-                maxLines: 3,
-                maxLength: 120),
+            _Field(
+                controller  : _bioController,
+                label       : 'Bio',
+                icon        : Icons.edit_note_rounded,
+                maxLines    : 3,
+                maxLength   : 120,
+                showCounter : true), // ✅ only bio shows counter
             const SizedBox(height: 10),
-            _Field(controller: _statusController,
-                label: 'Current Status',
-                icon: Icons.bolt_rounded),
+            _Field(
+                controller : _statusController,
+                label      : 'Current Status',
+                icon       : Icons.bolt_rounded),
 
             const SizedBox(height: 28),
-
-            // Professional
             const _SectionHeader(text: 'PROFESSIONAL'),
             const SizedBox(height: 12),
             const _Label(text: 'Role'),
@@ -212,9 +234,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Wrap(
               spacing: 8, runSpacing: 8,
               children: _jobRoles.map((r) => _Chip(
-                label: r,
-                isSelected: _selectedJobRole == r,
-                onTap: () => setState(() => _selectedJobRole = r),
+                label      : r,
+                isSelected : _selectedJobRole == r,
+                onTap      : () => setState(() => _selectedJobRole = r),
               )).toList(),
             ),
             const SizedBox(height: 16),
@@ -223,9 +245,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Wrap(
               spacing: 8, runSpacing: 8,
               children: _experienceLevels.map((e) => _Chip(
-                label: e,
-                isSelected: _selectedExperience == e,
-                onTap: () => setState(() => _selectedExperience = e),
+                label      : e,
+                isSelected : _selectedExperience == e,
+                onTap      : () => setState(() => _selectedExperience = e),
               )).toList(),
             ),
             const SizedBox(height: 16),
@@ -234,25 +256,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Wrap(
               spacing: 8, runSpacing: 8,
               children: _skillOptions.map((s) => _Chip(
-                label: s,
-                isSelected: _selectedSkills.contains(s),
-                onTap: () => setState(() => _selectedSkills.contains(s)
+                label      : s,
+                isSelected : _selectedSkills.contains(s),
+                onTap      : () => setState(() => _selectedSkills.contains(s)
                     ? _selectedSkills.remove(s)
                     : _selectedSkills.add(s)),
               )).toList(),
             ),
 
             const SizedBox(height: 28),
-
-            // Interests
             const _SectionHeader(text: 'INTERESTS'),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8, runSpacing: 8,
               children: _interestOptions.map((i) => _Chip(
-                label: i,
-                isSelected: _selectedInterests.contains(i),
-                onTap: () => setState(() => _selectedInterests.contains(i)
+                label      : i,
+                isSelected : _selectedInterests.contains(i),
+                onTap      : () => setState(() => _selectedInterests.contains(i)
                     ? _selectedInterests.remove(i)
                     : _selectedInterests.add(i)),
               )).toList(),
@@ -264,7 +284,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 }
 
-// ── Small widgets ─────────────────────────────────────────────────────────────
+// ── Small widgets ──────────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
   final String text;
@@ -272,11 +292,11 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(text,
       style: const TextStyle(
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textMuted,
+          fontSize   : 9,
+          fontWeight : FontWeight.w600,
+          color      : AppColors.textMuted,
           letterSpacing: 1.5,
-          fontFamily: 'Inter'));
+          fontFamily : 'Inter'));
 }
 
 class _Label extends StatelessWidget {
@@ -285,50 +305,52 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(text,
       style: const TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Inter'));
+          color      : AppColors.textSecondary,
+          fontSize   : 12,
+          fontWeight : FontWeight.w600,
+          fontFamily : 'Inter'));
 }
 
 class _Field extends StatelessWidget {
   final TextEditingController controller;
-  final String label;
+  final String   label;
   final IconData icon;
-  final String? prefix;
-  final int maxLines;
-  final int? maxLength;
+  final String?  prefix;
+  final int      maxLines;
+  final int?     maxLength;
+  final bool     showCounter; // ✅ new param
 
   const _Field({
     required this.controller,
     required this.label,
     required this.icon,
     this.prefix,
-    this.maxLines = 1,
+    this.maxLines    = 1,
     this.maxLength,
+    this.showCounter = false,
   });
 
   @override
   Widget build(BuildContext context) => Container(
     decoration: BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: AppColors.border),
+      color        : AppColors.surface,
+      borderRadius : BorderRadius.circular(12),
+      border       : Border.all(color: AppColors.border),
     ),
     child: TextField(
-      controller: controller,
-      maxLines: maxLines,
-      maxLength: maxLength,
+      controller : controller,
+      maxLines   : maxLines,
+      maxLength  : maxLength,
       style: const TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 14,
-          fontFamily: 'Inter'),
+          color      : AppColors.textPrimary,
+          fontSize   : 14,
+          fontFamily : 'Inter'),
       decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-            color: AppColors.textMuted,
-            fontSize: 12,
-            fontFamily: 'Inter'),
+        labelText  : label,
+        labelStyle : const TextStyle(
+            color      : AppColors.textMuted,
+            fontSize   : 12,
+            fontFamily : 'Inter'),
         prefixIcon: prefix != null
             ? Padding(
           padding: const EdgeInsets.only(left: 12, right: 4),
@@ -339,26 +361,32 @@ class _Field extends StatelessWidget {
               const SizedBox(width: 5),
               Text(prefix!,
                   style: const TextStyle(
-                      color: AppColors.accent,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter')),
+                      color      : AppColors.accent,
+                      fontWeight : FontWeight.bold,
+                      fontFamily : 'Inter')),
             ],
           ),
         )
             : Icon(icon, color: AppColors.textMuted, size: 17),
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(
+        border         : InputBorder.none,
+        contentPadding : const EdgeInsets.symmetric(
             horizontal: 16, vertical: 14),
-        counterStyle: const TextStyle(
-            color: AppColors.textMuted, fontSize: 10),
+        // ✅ hide counter by default, show only for bio
+        counterText  : showCounter ? null : '',
+        counterStyle: showCounter
+            ? const TextStyle(
+            color      : AppColors.textMuted,
+            fontSize   : 10,
+            fontFamily : 'Inter')
+            : null,
       ),
     ),
   );
 }
 
 class _Chip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
+  final String       label;
+  final bool         isSelected;
   final VoidCallback onTap;
   const _Chip(
       {required this.label,
@@ -367,31 +395,30 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+    onTap : onTap,
+    child : AnimatedContainer(
+      duration : const Duration(milliseconds: 180),
+      padding  : const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
         color: isSelected
             ? AppColors.accent.withValues(alpha: 0.12)
             : AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isSelected ? AppColors.accent : AppColors.border,
-          width: isSelected ? 1.5 : 1,
+          color : isSelected ? AppColors.accent : AppColors.border,
+          width : isSelected ? 1.5 : 1,
         ),
       ),
       child: Text(label,
           style: TextStyle(
-              color: isSelected
+              color      : isSelected
                   ? AppColors.accent
                   : AppColors.textSecondary,
-              fontSize: 12,
-              fontWeight: isSelected
+              fontSize   : 12,
+              fontWeight : isSelected
                   ? FontWeight.w600
                   : FontWeight.normal,
-              fontFamily: 'Inter')),
+              fontFamily : 'Inter')),
     ),
   );
 }
-

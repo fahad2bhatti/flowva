@@ -1,15 +1,11 @@
-import 'package:flowva/features/chat/screens/chat_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/skeleton_widgets.dart';
 import '../../auth/controllers/auth_controller.dart';
-import '../../auth/screens/login_screen.dart';
 import '../controllers/group_controller.dart';
 import '../../../data/models/group_model.dart';
-import 'create_group_screen.dart';
-import 'join_group_screen.dart';
-import '../../feed/screens/group_feed_screen.dart';
 import '../../tasks/controllers/task_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flowva/shared/widgets/bottom_nav_bar.dart';
@@ -28,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen>
   int _selectedIndex = 0;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  String _taskFilter = 'All';
 
   // FAB animation
   late AnimationController _fabController;
@@ -205,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen>
               // Chat icon
               _IconBtn(
                 icon: Icons.chat_bubble_outline_rounded,
-                onTap: _openChat,
+                onTap: () => context.push('/dm'),
                 hasBadge: false,
               ),
               const SizedBox(width: 8),
@@ -218,7 +215,8 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(width: 8),
               // Avatar
               GestureDetector(
-                onTap: _handleLogout,
+                onTap: () => context.push('/profile'),
+                onLongPress: _showLogoutDialog,
                 child: Container(
                   width: 42,
                   height: 42,
@@ -269,33 +267,40 @@ class _HomeScreenState extends State<HomeScreen>
           stream: GroupController.instance.getUserGroups(),
           builder: (ctx, snap) {
             final groupCount = snap.data?.length ?? 0;
-            return Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF0E0E1A),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF1A1A2E)),
-              ),
-              child: Row(
-                children: [
-                  _StatCell(
-                    value: '$groupCount',
-                    label: 'GROUPS',
-                    valueColor: AppColors.accent,
-                    isFirst: true,
+            return StreamBuilder<List<Map<String, dynamic>>>(
+              stream: TaskController.instance.getMyTasks(),
+              builder: (ctx, taskSnap) {
+                final tasks = taskSnap.data ?? [];
+                final pendingCount = tasks.where((t) => t['status'] != 'done').length;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0E0E1A),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFF1A1A2E)),
                   ),
-                  _StatCell(
-                    value: '—',
-                    label: 'TASKS',
-                    valueColor: AppColors.textPrimary,
+                  child: Row(
+                    children: [
+                      _StatCell(
+                        value: '$groupCount',
+                        label: 'GROUPS',
+                        valueColor: AppColors.accent,
+                        isFirst: true,
+                      ),
+                      _StatCell(
+                        value: taskSnap.connectionState == ConnectionState.waiting ? '—' : '$pendingCount',
+                        label: 'TASKS',
+                        valueColor: AppColors.textPrimary,
+                      ),
+                      _StatCell(
+                        value: '—',
+                        label: 'UNREAD',
+                        valueColor: const Color(0xFF8B5CF6),
+                        isLast: true,
+                      ),
+                    ],
                   ),
-                  _StatCell(
-                    value: '—',
-                    label: 'UNREAD',
-                    valueColor: const Color(0xFF8B5CF6),
-                    isLast: true,
-                  ),
-                ],
-              ),
+                );
+              },
             );
           },
         ),
@@ -312,6 +317,12 @@ class _HomeScreenState extends State<HomeScreen>
         child: _GlassSearchBar(
           controller: _searchController,
           onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+          onClear: () {
+            _searchController.clear();
+            setState(() {
+              _searchQuery = '';
+            });
+          },
         ),
       ),
     );
@@ -338,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen>
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF2A2A4A),
+                color: AppColors.textMuted,
                 letterSpacing: 1.8,
                 fontFamily: 'Inter',
               ),
@@ -380,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen>
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF2A2A4A),
+                color: AppColors.textMuted,
                 letterSpacing: 1.8,
                 fontFamily: 'Inter',
               ),
@@ -436,8 +447,8 @@ class _HomeScreenState extends State<HomeScreen>
             if (filtered.isEmpty) {
               return _EmptyState(
                 isSearching: _searchQuery.isNotEmpty,
-                onCreateTap: () => Navigator.push(context, _slideRoute(const CreateGroupScreen())),
-                onJoinTap: () => Navigator.push(context, _slideRoute(const JoinGroupScreen())),
+                onCreateTap: () => context.push('/create-group'),
+                onJoinTap: () => context.push('/join-group'),
               );
             }
 
@@ -455,10 +466,7 @@ class _HomeScreenState extends State<HomeScreen>
                   return _PremiumGroupRow(
                     group : preview[i],
                     isLast: i == preview.length - 1,
-                    onTap : () => Navigator.push(
-                      context,
-                      _slideRoute(GroupFeedScreen(group: preview[i])),
-                    ),
+                    onTap : () => context.push('/group/${preview[i].id}', extra: preview[i]),
                   );
                 }),
               ),
@@ -529,7 +537,7 @@ class _HomeScreenState extends State<HomeScreen>
                       'Summarize tasks · Generate content · Ask anything',
                       style: TextStyle(
                         fontSize: 10,
-                        color: Color(0xFF4A3A6A),
+                        color: AppColors.textSecondary,
                         fontFamily: 'Inter',
                       ),
                     ),
@@ -570,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
         const Padding(
-          padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
           child: Text(
             'Tasks assigned to you',
             style: TextStyle(
@@ -580,7 +588,47 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
         ),
-        Expanded(child: _MyTasksFeed()),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Row(
+            children: ['All', 'Pending', 'Done'].map((filter) {
+              final isSelected = _taskFilter == filter;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ChoiceChip(
+                  label: Text(
+                    filter,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                  selected: isSelected,
+                  selectedColor: AppColors.accent,
+                  backgroundColor: AppColors.surface,
+                  showCheckmark: false,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: isSelected ? AppColors.accent : AppColors.border,
+                      width: 1,
+                    ),
+                  ),
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        _taskFilter = filter;
+                      });
+                    }
+                  },
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        Expanded(child: _MyTasksFeed(filter: _taskFilter)),
       ],
     );
   }
@@ -646,17 +694,17 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (ctx) => _AddGroupBottomSheet(
         onCreateGroup: () {
           Navigator.pop(ctx);
-          Navigator.push(context, _slideRoute(const CreateGroupScreen()));
+          context.push('/create-group');
         },
         onJoinGroup: () {
           Navigator.pop(ctx);
-          Navigator.push(context, _slideRoute(const JoinGroupScreen()));
+          context.push('/join-group');
         },
       ),
     );
   }
 
-  void _openChat() {
+  /*void _openChat() {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -664,11 +712,33 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (ctx) => _GroupChatPickerSheet(
         onGroupSelected: (groupId, groupName) {
           Navigator.pop(ctx);
-          Navigator.push(
-            context,
-            _slideRoute(ChatScreen(groupId: groupId, channelName: 'general')),
-          );
+          context.push('/chat/$groupId');
         },
+      ),
+    );
+  }*/
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text('Confirm Logout', style: TextStyle(color: Colors.white, fontFamily: 'Inter')),
+        content: const Text('Are you sure you want to log out?', style: TextStyle(color: AppColors.textSecondary, fontFamily: 'Inter')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted, fontFamily: 'Inter')),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () {
+              Navigator.pop(ctx);
+              _handleLogout();
+            },
+            child: const Text('Logout', style: TextStyle(color: Colors.white, fontFamily: 'Inter')),
+          ),
+        ],
       ),
     );
   }
@@ -677,10 +747,7 @@ class _HomeScreenState extends State<HomeScreen>
     try {
       await AuthController.instance.logout();
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-              (route) => false,
-        );
+        context.go('/login');
       }
     } catch (e) {
       if (mounted) _showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
@@ -699,17 +766,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  PageRoute _slideRoute(Widget page) {
-    return PageRouteBuilder(
-      pageBuilder: (_, animation, _) => page,
-      transitionsBuilder: (_, animation, _, child) => SlideTransition(
-        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-            .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-        child: child,
-      ),
-      transitionDuration: const Duration(milliseconds: 300),
-    );
-  }
+
 
   // ─────────────────────────────────────────────
   // Build
@@ -850,7 +907,7 @@ class _PremiumGroupRowState extends State<_PremiumGroupRow> {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 11,
-                      color: Color(0xFF2A2A4A),
+                      color: AppColors.textMuted,
                       fontFamily: 'Inter',
                     ),
                   ),
@@ -859,7 +916,7 @@ class _PremiumGroupRowState extends State<_PremiumGroupRow> {
             ),
             const Icon(
               Icons.chevron_right_rounded,
-              color: Color(0xFF2A2A4A),
+              color: AppColors.textMuted,
               size: 18,
             ),
           ],
@@ -915,7 +972,7 @@ class _StatCell extends StatelessWidget {
               label,
               style: const TextStyle(
                 fontSize: 9,
-                color: Color(0xFF2A2A4A),
+                color: AppColors.textMuted,
                 letterSpacing: 1.2,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Inter',
@@ -962,19 +1019,29 @@ class _QuickActionTileState extends State<_QuickActionTile> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 13),
           decoration: BoxDecoration(
-            color: const Color(0xFF0E0E1A),
+            color: _pressed ? const Color(0xFF141428) : const Color(0xFF0E0E1A),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0xFF1A1A2E)),
+            gradient: _pressed
+                ? LinearGradient(
+                    colors: [
+                      const Color(0xFF141428),
+                      AppColors.accent.withValues(alpha: 0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
           ),
           child: Column(
             children: [
-              Icon(widget.icon, color: const Color(0xFF3A3A5A), size: 20),
+              Icon(widget.icon, color: AppColors.textSecondary, size: 20),
               const SizedBox(height: 6),
               Text(
                 widget.label,
                 style: const TextStyle(
                   fontSize: 9,
-                  color: Color(0xFF2A2A4A),
+                  color: AppColors.textMuted,
                   letterSpacing: 0.3,
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Inter',
@@ -1046,8 +1113,13 @@ class _FadeSlideInState extends State<_FadeSlideIn>
 class _GlassSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String>  onChanged;
+  final VoidCallback          onClear;
 
-  const _GlassSearchBar({required this.controller, required this.onChanged});
+  const _GlassSearchBar({
+    required this.controller,
+    required this.onChanged,
+    required this.onClear,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1063,13 +1135,23 @@ class _GlassSearchBar extends StatelessWidget {
         onChanged: onChanged,
         style: const TextStyle(
             color: AppColors.textPrimary, fontSize: 14, fontFamily: 'Inter'),
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           hintText: 'Search groups…',
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
               color: AppColors.textMuted, fontSize: 14, fontFamily: 'Inter'),
-          prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted, size: 20),
+          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textMuted, size: 20),
+          suffixIcon: controller.text.isNotEmpty
+              ? GestureDetector(
+                  onTap: onClear,
+                  child: const Icon(Icons.clear_rounded, color: AppColors.textMuted, size: 20),
+                )
+              : null,
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: 40,
+            minHeight: 24,
+          ),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
@@ -1381,7 +1463,8 @@ class _SheetOption extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _MyTasksFeed extends StatelessWidget {
-  const _MyTasksFeed();
+  final String filter;
+  const _MyTasksFeed({required this.filter});
 
   Color _priorityColor(String p) {
     if (p == 'high') return AppColors.error;
@@ -1438,7 +1521,13 @@ class _MyTasksFeed extends StatelessWidget {
           ));
         }
         final tasks = snapshot.data ?? [];
-        if (tasks.isEmpty) {
+        final filteredTasks = tasks.where((t) {
+          if (filter == 'Pending') return t['status'] != 'done';
+          if (filter == 'Done') return t['status'] == 'done';
+          return true; // 'All'
+        }).toList();
+
+        if (filteredTasks.isEmpty) {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1453,11 +1542,11 @@ class _MyTasksFeed extends StatelessWidget {
                       color: AppColors.accent, size: 32),
                 ),
                 const SizedBox(height: 16),
-                const Text('No tasks assigned',
-                    style: TextStyle(color: AppColors.textPrimary,
+                Text('No ${filter.toLowerCase()} tasks',
+                    style: const TextStyle(color: AppColors.textPrimary,
                         fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Inter')),
                 const SizedBox(height: 6),
-                const Text('Tasks assigned to you will appear here',
+                const Text('Tasks in this filter will appear here',
                     style: TextStyle(color: AppColors.textSecondary,
                         fontSize: 13, fontFamily: 'Inter'),
                     textAlign: TextAlign.center),
@@ -1465,8 +1554,8 @@ class _MyTasksFeed extends StatelessWidget {
             ),
           );
         }
-        final pending = tasks.where((t) => t['status'] != 'done').toList();
-        final done    = tasks.where((t) => t['status'] == 'done').toList();
+        final pending = filteredTasks.where((t) => t['status'] != 'done').toList();
+        final done    = filteredTasks.where((t) => t['status'] == 'done').toList();
         final sorted  = [...pending, ...done];
 
         return ListView.builder(

@@ -146,7 +146,7 @@ class _DMScreenState extends State<DMScreen> {
                 widget.otherUserPhoto,
                 width: 36, height: 36,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Text(initial,
+                errorBuilder: (context, error, stackTrace) => Text(initial,
                     style: const TextStyle(
                         color: AppColors.accent,
                         fontWeight: FontWeight.bold,

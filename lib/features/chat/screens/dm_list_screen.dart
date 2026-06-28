@@ -18,15 +18,17 @@ class DmListScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        title: const Text(
-          'Direct Messages',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
+        title: const Text('Direct Messages', /* same style */),
+        actions: [
+          // ✅ New DM — search screen pe jao
+          IconButton(
+            icon: const Icon(Icons.person_search_rounded,
+                color: AppColors.textSecondary),
+            onPressed: () => context.push('/search'),
+            tooltip: 'Find people',
           ),
-        ),
+          const SizedBox(width: 4),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(color: AppColors.border, height: 1),

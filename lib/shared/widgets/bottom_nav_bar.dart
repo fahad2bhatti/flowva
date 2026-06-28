@@ -61,27 +61,34 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 8, bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 0.5),
+    return BottomAppBar(
+      color: AppColors.surface,
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 8.0,
+      clipBehavior: Clip.antiAlias,
+      elevation: 0,
+      padding: EdgeInsets.zero,
+      child: Container(
+        height: 60,
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(color: AppColors.border, width: 0.5),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (i) {
-          // Middle slot — FAB ke liye space
-          if (i == 2) return const SizedBox(width: 56);
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(items.length, (i) {
+            // Middle slot — FAB ke liye space
+            if (i == 2) return const SizedBox(width: 56);
 
-          final isSelected = selectedIndex == i;
-          return _NavBarItem(
-            item: items[i],
-            isSelected: isSelected,
-            onTap: () => onItemSelected(i),
-          );
-        }),
+            final isSelected = selectedIndex == i;
+            return _NavBarItem(
+              item: items[i],
+              isSelected: isSelected,
+              onTap: () => onItemSelected(i),
+            );
+          }),
+        ),
       ),
     );
   }
