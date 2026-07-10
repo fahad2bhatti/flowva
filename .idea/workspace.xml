@@ -10,18 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="56761fd8-0f07-4343-a34b-e56a9aa7c472" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/features/search/controllers/search_controller.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/search/screens/search_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/app/routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/routes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/chat/screens/dm_list_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/chat/screens/dm_list_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/chat/screens/dm_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/chat/screens/dm_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/groups/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/profile/controllers/profile_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/controllers/profile_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/profile/screens/complete_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/screens/complete_profile_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/profile/screens/edit_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/screens/edit_profile_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/profile/screens/profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/profile/screens/profile_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/shared/widgets/bottom_nav_bar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/shared/widgets/bottom_nav_bar.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,27 +200,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;io.flutter.project.isFirstOpen&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/flowva&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "git-widget-placeholder": "main",
+    "io.flutter.project.isFirstOpen": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/flowva",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\flowva\lib\features\chat" />
